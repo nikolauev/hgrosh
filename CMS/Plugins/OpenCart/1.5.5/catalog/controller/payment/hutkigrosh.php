@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: text/html; charset=utf-8');
+
 class ControllerPaymentHutkiGrosh extends Controller {
 	// Транслитерация строк.
 	function transliterate($st) {
@@ -31,27 +31,26 @@ class ControllerPaymentHutkiGrosh extends Controller {
 	}
 
     protected function index() {
-        $this->language->load('payment/hutkigrosh');
+        $this->language->load('payment/artpay');
         $this->data['text_testmode'] = $this->language->get('text_testmode');
         $this->data['button_confirm'] = $this->language->get('button_confirm');
         $this->data['testmode'] = $this->config->get('artpay_test');
-        $this->data['action'] = $this->url->link('payment/hutkigrosh/pay');
+        $this->data['action'] = $this->url->link('payment/artpay/pay');
 
-        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/hutkigrosh.tpl')) {
-            $this->template = $this->config->get('config_template') . '/template/payment/hutkigrosh.tpl';
+        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/artpay.tpl')) {
+            $this->template = $this->config->get('config_template') . '/template/payment/artpay.tpl';
         } else {
-            $this->template = 'default/template/payment/hutkigrosh.tpl';
+            $this->template = 'default/template/payment/artpay.tpl';
         }
         $this->render();
     }
 
 
     public function pay() {
-
         //инициализируем URL для HG (тестовы/рабочий)
         $this->constructMy($this->config->get('artpay_test'));
 
-        $this->language->load('payment/hutkigrosh');
+        $this->language->load('payment/artpay');
 
         if(!isset($this->session->data['order_id'])) {
             $this->redirect($this->url->link('checkout/checkout'));
@@ -120,8 +119,8 @@ class ControllerPaymentHutkiGrosh extends Controller {
             'currency' => 974,
             'clientFio' => $order_info['firstname'].' '.$order_info['lastname'],
             'clientAddress' => $order_info['payment_address_1'].' '.$order_info['payment_address_2'].' '.$order_info['payment_zone'],
-            'returnUrl' => $this->url->link('payment/hutkigrosh/notify'),
-            'cancelReturnUrl' => $this->url->link('payment/hutkigrosh/fail'),
+            'returnUrl' => $this->url->link('payment/artpay/notify'),
+            'cancelReturnUrl' => $this->url->link('payment/artpay/fail'),
         );
 
         echo '<h1>Спасибо за заказ!</h2>';
@@ -678,7 +677,8 @@ class ControllerPaymentHutkiGrosh extends Controller {
         curl_setopt($this->ch, CURLOPT_VERBOSE, true); // вывод доп. информации в STDERR
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false); // не проверять сертификат узла сети
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false); // проверка существования общего имени в сертификате SSL
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true); // возврат результата вместо вывода на экран
+        curl_setopt($this->ch, CURLOPT_SSLVERSION, 1); // версия SSL
+		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true); // возврат результата вместо вывода на экран
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers); // Массив устанавливаемых HTTP-заголовков
         if ($request == 'POST') {
             curl_setopt($this->ch, CURLOPT_POST, true);
