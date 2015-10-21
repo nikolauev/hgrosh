@@ -1,6 +1,6 @@
 <?php
 
-$_['heading_title'] = 'ArtPay';
+$_['heading_title'] = 'HutkiGrosh';
 
 $_['text_payment'] = 'Payment';
 $_['text_success'] = 'Module settings have been updated!';

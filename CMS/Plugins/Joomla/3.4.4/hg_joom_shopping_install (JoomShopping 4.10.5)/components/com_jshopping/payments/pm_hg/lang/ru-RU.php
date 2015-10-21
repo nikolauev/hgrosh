@@ -1,9 +1,9 @@
 <?php
 /*
-* @info Платёжный модуль ArtPay для JoomShopping
+* @info Платёжный модуль HutkiGrosh для JoomShopping
 * @package JoomShopping for Joomla!
 * @subpackage payment
-* @author ArtPay.by
+* @author HutkiGrosh.by
 */
 
 //защита от прямого доступа

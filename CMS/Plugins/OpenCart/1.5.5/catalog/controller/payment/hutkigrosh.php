@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: text/html; charset=utf-8');
+
 class ControllerPaymentHutkiGrosh extends Controller {
 	// Транслитерация строк.
 	function transliterate($st) {
@@ -34,7 +34,7 @@ class ControllerPaymentHutkiGrosh extends Controller {
         $this->language->load('payment/hutkigrosh');
         $this->data['text_testmode'] = $this->language->get('text_testmode');
         $this->data['button_confirm'] = $this->language->get('button_confirm');
-        $this->data['testmode'] = $this->config->get('artpay_test');
+        $this->data['testmode'] = $this->config->get('hutkigrosh_test');
         $this->data['action'] = $this->url->link('payment/hutkigrosh/pay');
 
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/hutkigrosh.tpl')) {
@@ -47,9 +47,8 @@ class ControllerPaymentHutkiGrosh extends Controller {
 
 
     public function pay() {
-
         //инициализируем URL для HG (тестовы/рабочий)
-        $this->constructMy($this->config->get('artpay_test'));
+        $this->constructMy($this->config->get('hutkigrosh_test'));
 
         $this->language->load('payment/hutkigrosh');
 
@@ -63,8 +62,8 @@ class ControllerPaymentHutkiGrosh extends Controller {
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
         $order_id = $order_info["order_id"];
-        $this->_login = $this->config->get('artpay_login'); // имя пользователя
-        $this->_pwd = $this->config->get('artpay_pswd'); // пароль
+        $this->_login = $this->config->get('hutkigrosh_login'); // имя пользователя
+        $this->_pwd = $this->config->get('hutkigrosh_pswd'); // пароль
         $name = $this->_login;
         $pwd = $this->_pwd;
         $res = $this->apiLogIn($name, $pwd);
@@ -91,7 +90,7 @@ class ControllerPaymentHutkiGrosh extends Controller {
 //
         $total = round($order_info['total']);
         $data = array(
-            'eripId' => $this->config->get('artpay_storeid'),
+            'eripId' => $this->config->get('hutkigrosh_storeid'),
             'invId' => $order_id,
             'fullName' => $order_info['firstname'].' '.$order_info['lastname'],
             'mobilePhone' => $order_info['telephone'],
@@ -189,8 +188,8 @@ class ControllerPaymentHutkiGrosh extends Controller {
 	#уведомление об оплате
 	public function notify() {
 		if(isset($hg_data["purchaseid"])) {
-            $this->_login = $this->config->get('artpay_login'); // имя пользователя
-            $this->_pwd = $this->config->get('artpay_pswd'); // пароль
+            $this->_login = $this->config->get('hutkigrosh_login'); // имя пользователя
+            $this->_pwd = $this->config->get('hutkigrosh_pswd'); // пароль
             $name = $this->_login;
             $pwd = $this->_pwd;
             $res = $this->apiLogIn($name, $pwd);
@@ -678,7 +677,8 @@ class ControllerPaymentHutkiGrosh extends Controller {
         curl_setopt($this->ch, CURLOPT_VERBOSE, true); // вывод доп. информации в STDERR
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false); // не проверять сертификат узла сети
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false); // проверка существования общего имени в сертификате SSL
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true); // возврат результата вместо вывода на экран
+        curl_setopt($this->ch, CURLOPT_SSLVERSION, 1); // версия SSL
+		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true); // возврат результата вместо вывода на экран
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers); // Массив устанавливаемых HTTP-заголовков
         if ($request == 'POST') {
             curl_setopt($this->ch, CURLOPT_POST, true);
