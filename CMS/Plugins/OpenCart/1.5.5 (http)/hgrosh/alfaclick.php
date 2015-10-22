@@ -16,4 +16,5 @@ $data = array(
 );
 $responce = $hg->apiAlfaClick($data);
 $responceXML =  simplexml_load_string($responce);
+$hg->apiLogOut();
 echo $responceXML->__toString();
