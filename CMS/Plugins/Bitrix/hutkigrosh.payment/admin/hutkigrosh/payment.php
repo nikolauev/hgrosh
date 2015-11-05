@@ -97,9 +97,9 @@ $data = array(
 
 $billID = $hg->apiBillNew($data);
 if (!$billID) {
-//    echo $hg->getError();
-//    $hg->apiLogOut(); // Завершаем сеанс
-//    exit;
+    echo $hg->getError();
+    $hg->apiLogOut(); // Завершаем сеанс
+    exit;
 }else{
     $_SESSION['HG_LOGIN'] = $arPropPS['LOGIN'];
     $_SESSION['HG_PWD'] = $arPropPS['PWD'];
