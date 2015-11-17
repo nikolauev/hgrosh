@@ -224,11 +224,7 @@ class HootkiGrosh
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
         $Bill->addChild('billid',$data['billid']);
         $Bill->addChild('phone',$data['phone']);
-//        $xml = $Bill->asXML();
-        $xml = "<AlfaClickParam xmlns='http://www.hutkigrosh.by/API/PaymentSystems'>".
-  "<billId>4364356436463465</billId>".
-  "<phone>375256548523</phone>".
-    "</AlfaClickParam>";
+        $xml = $Bill->asXML();
         // запрос
         $res = $this->requestPost('Pay/AlfaClick', $xml);
         $responseXML = simplexml_load_string($this->response);
