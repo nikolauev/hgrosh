@@ -106,19 +106,6 @@ if (!$billID) {
     $_SESSION['BILL_ID'] = $billID;
 }
 
-if($_POST['alfaclick']  ==  'true'){
-    $data = array(
-        'billid'=>$_SESSION['BILL_ID'],
-        'phone'=>$_POST['phone'],
-    );
-    $responce = $hg->apiAlfaClick($data);
-    if($responce == '0'){
-        echo "<h1 style='color: #ff0000'>Ошибка при выставлении счета в системе AlfaClick!</h1>";
-    }else{
-        echo "<h1 style='color: green'>Счет успешно выставлен</h1>";
-    }
-}
-
 
 //// выставляем счет в другие системы ------------------------------------------------------------------------------------------
 
@@ -144,13 +131,44 @@ echo $hg->apiBgpbPay($dataBgpb);
 <hr>
 <h2>Форма для выставления счета в системе AlfaClick</h2>
 <div class="alfaclick">
-    <form method="post">
+    <input type="hidden" value="<?=$billID;?>" id="billID">
     <input type="hidden" value="true" name="alfaclick">
     <input type="text" maxlength="20"name="phone" value="<?=$GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['PHONE']?>" id="phone">
-    <input type="submit" value="Выставить счет в AlfaClick">
-    </form>
+        <button>Выставить счет в AlfaClick</button>
 
 </div>
+<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(document).on('click','button',function(){
+            console.log('click');
+            var phone = $('#phone').val();
+            var billid = $('#billID').val();
+            var is_test = <?=$arPropPS['MODE']?>;
+            var login = "<?=$arPropPS['LOGIN']?>";
+            var pwd = "<?=$arPropPS['PWD']?>";
+            $.post('/hgrosh/alfaclick.php',
+                {
+                    phone : phone,
+                    billid : billid,
+                    is_test : is_test,
+                    login : login,
+                    pwd : pwd
+                }
+            ).done(function(data){
+                    console.log(data);
+                    if(data == '0'){
+                        alert('Не удалось выставить счет в системе AlfaClick');
+                    }else{
+                        alert('Выставлен счет в системе AlfaClick ');
+                    }
+
+                });
+        });
+
+    });
+
+</script>
 <?
 $hg->apiLogOut();
 
