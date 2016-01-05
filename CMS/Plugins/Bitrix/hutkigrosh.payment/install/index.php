@@ -67,13 +67,22 @@ Class hutkigrosh_payment extends CModule
         {
             CopyDirFiles($p."/payinfo", $sale_payment, true, true) ;
         }
-
+		if ( !is_dir($sale_payment = $_SERVER['DOCUMENT_ROOT'].'/hgrosh') )
+        {
+            mkdir($sale_payment, 0755);
+        }
+        if (is_dir($p = $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/'.self::MODULE_ID))
+        {
+            CopyDirFiles($p."/hgrosh", $sale_payment, true, true) ;
+        }
 		return true;
 	}
 
 	function UnInstallFiles()
 	{
  		DeleteDirFilesEx('/bitrix/php_interface/include/sale_payment/hutkigrosh');
+		DeleteDirFilesEx('/payinfo');
+		DeleteDirFilesEx('/hgrosh');
 		return true;
 	}
 

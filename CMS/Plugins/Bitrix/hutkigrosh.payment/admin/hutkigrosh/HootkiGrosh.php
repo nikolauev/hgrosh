@@ -379,7 +379,7 @@ class HootkiGrosh
      */
     public function getError()
     {
-        return 'Счет не выставлен! Произошла ошибка: '$this->error.'. <br> Повторите заказ.';
+        return 'Счет не выставлен! Произошла ошибка: '.$this->error.'. <br> Повторите заказ.';
     }
 
     /**
