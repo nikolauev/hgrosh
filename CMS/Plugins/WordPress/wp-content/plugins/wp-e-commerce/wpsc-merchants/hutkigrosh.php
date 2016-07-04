@@ -210,7 +210,7 @@ function gateway_hutkigrosh($separator, $sessionid)
             'email' => $arForm['billingemail'],
             'fullAddress' => $arForm['billingstate'].' '.$arForm['billingcity'].' '.$arForm['billingaddress'],
             'amt' => $total,
-            'curr'=> 'BYR',
+            'curr'=> 'BYN',
             'products' => $arItems
         );
         $billID = $hg->apiBillNew($data);

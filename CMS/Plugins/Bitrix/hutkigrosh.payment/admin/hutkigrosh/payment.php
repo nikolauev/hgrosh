@@ -90,7 +90,7 @@ $data = array(
     'email' => $GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['EMAIL'],
     'fullAddress' => $GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['CITY'].' '.$GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['ADDRESS'],
     'amt' => $totalSummOrder,
-    'curr'=> 'BYR',
+    'curr'=> 'BYN',
     'products' => $arItems
 );
 
