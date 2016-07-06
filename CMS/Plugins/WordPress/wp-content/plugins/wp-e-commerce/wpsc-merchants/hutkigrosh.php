@@ -156,6 +156,7 @@ function gateway_hutkigrosh($separator, $sessionid)
 
 	//инициализация класса
 	$test_mode = get_option('hutkigrosh_debug');
+
     $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($test_mode);
 
 	$arParams['ap_storeid'] = get_option('hutkigrosh_storeid');
@@ -187,15 +188,14 @@ function gateway_hutkigrosh($separator, $sessionid)
 		$hg->apiLogOut(); // Завершаем сеанс
 		exit;
 	}
-
-
+    $arItems = array();
         /// создаем заказ
 	if(is_array($cart)) {
 		foreach ($cart as $line_item) {
-			$arItem['invItemId'] = $line_item['key'];
-			$arItem['desc'] = transliterate($line_item['name']);
+			$arItem['invItemId'] = $line_item['prodid'];
+			$arItem['desc'] = $line_item['name'];
 			$arItem['count'] = round($line_item['quantity']);
-			$arItem['amt'] = round($line_item['price']);
+			$arItem['amt'] = $line_item['price'];
 			$arItems[] = $arItem;
 			unset($arItem);
 		}
@@ -213,6 +213,8 @@ function gateway_hutkigrosh($separator, $sessionid)
             'curr'=> 'BYN',
             'products' => $arItems
         );
+
+
         $billID = $hg->apiBillNew($data);
         if (!$billID) {
             echo $hg->getError();
@@ -221,63 +223,24 @@ function gateway_hutkigrosh($separator, $sessionid)
         }
         // выставляем счет в другие системы ------------------------------------------------------------------------------------------
 
-        $dataBgpb = array(
-            'billId' => $billID,
-            'paymentId' => 1234567890,
-            'spClaimId' => $order_id,
-            'amount' => $total,
-            'currency' => 974,
-            'clientFio' => $arForm['billingfirstname'].' '.$arForm['billinglastname'],
-            'clientAddress' => $arForm['billingstate'].' '.$arForm['billingcity'].' '.$arForm['billingaddress'],
-            'returnUrl' => $arParams['ap_return_url'],
-            'cancelReturnUrl' => $arParams['ap_cancel_return_url'],
-        );
+//        $dataBgpb = array(
+//            'billId' => $billID,
+//            'paymentId' => 1234567890,
+//            'spClaimId' => $order_id,
+//            'amount' => $total,
+//            'currency' => 974,
+//            'clientFio' => $arForm['billingfirstname'].' '.$arForm['billinglastname'],
+//            'clientAddress' => $arForm['billingstate'].' '.$arForm['billingcity'].' '.$arForm['billingaddress'],
+//            'returnUrl' => $arParams['ap_return_url'],
+//            'cancelReturnUrl' => $arParams['ap_cancel_return_url'],
+//        );
 
         echo '<h1>Спасибо за заказ!</h2>';
         echo '<h1>Счет для оплаты в системе ЕРИП: ' . $order_id . '</h2>';
         echo '<hr>';
-        print_r($hg->apiBgpbPay($dataBgpb));
+//        print_r($hg->apiBgpbPay($dataBgpb));
         ?>
-        <br>
-    <hr>
-    <div class="alfaclick">
-        <input type="hidden" value="<?=$billID?>" id="billID">
-        <input type="text" maxlength="20" value="<?=$arForm['billingphone']?>" id="phone">
-        <button>Выставить счет в AlfaClick</button>
-    </div>
-    <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $(document).on('click','button',function(){
-                var phone = $('#phone').val();
-                var billid = $('#billID').val();
-                var coockie = $('#cookie').val();
-                var is_test = <?=$arParams['ap_test']?>;
-                var login = "<?=$arParams['login']?>";
-                var pwd = "<?=$arParams['pswd']?>";
-                $.post('/hgrosh/alfaclick.php',
-                    {
-                        phone : phone,
-                        billid : billid,
-                        coockie : coockie,
-                        is_test : is_test,
-                        login : login,
-                        pwd : pwd
-                    }
-                ).done(function(data){
-                        if(data == '0'){
-                            alert('Не удалось выставить счет в системе AlfaClick');
-                        }else{
-                            alert('Выставлен счет в системе AlfaClick');
-                        }
 
-                    });
-            });
-
-        });
-
-
-    </script>
     <hr>
     <a href="/">Вернуться на сайт.</a>
     <hr>

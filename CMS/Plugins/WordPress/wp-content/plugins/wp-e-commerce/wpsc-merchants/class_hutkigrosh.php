@@ -169,8 +169,10 @@ class HootkiGrosh
             }
         }
         $xml = $Bill->asXML();
+
         // запрос
         $res = $this->requestPost('Invoicing/Bill', $xml);
+
         if ($res) {
             $array = $this->responseToArray();
             if (is_array($array) && isset($array['status']) && isset($array['billID'])) {
@@ -188,6 +190,7 @@ class HootkiGrosh
         }
         return false;
     }
+
 
     /**
      * Добавляет новый счет в систему БелГазПромБанк
