@@ -132,7 +132,7 @@ function gateway_hutkigrosh($separator, $sessionid)
 	$purchase_log = $wpdb->get_results($purchase_log_sql,ARRAY_A) ;
 	
 	$order_id = $purchase_log[0]["id"];
-	$amount_ceil = round($purchase_log[0]["totalprice"]);
+	$amount_ceil = $purchase_log[0]["totalprice"];
 
 	$cart_sql = "SELECT * FROM `".WPSC_TABLE_CART_CONTENTS."` WHERE `purchaseid`='".$order_id."'";
 	$cart = $wpdb->get_results($cart_sql,ARRAY_A);

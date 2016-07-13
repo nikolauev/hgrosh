@@ -76,7 +76,7 @@ if(is_array($arBasketItems)) {
         $arItem['invItemId'] = $line_item['ID'];
         $arItem['desc'] = $line_item['NAME'];
         $arItem['count'] = round($line_item['QUANTITY']);
-        $arItem['amt'] = round($line_item['QUANTITY']*$line_item['PRICE']);
+        $arItem['amt'] = $line_item['QUANTITY']*$line_item['PRICE'];
         $totalSummOrder +=$arItem['amt'];
         $arItems[] = $arItem;
         unset($arItem);

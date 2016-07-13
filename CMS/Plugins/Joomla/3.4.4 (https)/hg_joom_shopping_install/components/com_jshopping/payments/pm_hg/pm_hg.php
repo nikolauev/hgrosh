@@ -82,7 +82,7 @@ class pm_hg extends PaymentRoot
                 $arItem['invItemId'] = $line_item->product_name;
                 $arItem['desc'] = $line_item->product_name;
                 $arItem['count'] = round($line_item->product_quantity);
-                $arItem['amt'] = round($line_item->product_item_price);
+                $arItem['amt'] = $line_item->product_item_price;
                 $arItems[] = $arItem;
                 unset($arItem);
             }

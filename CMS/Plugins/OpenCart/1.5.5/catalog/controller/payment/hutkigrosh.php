@@ -58,13 +58,13 @@ class ControllerPaymentHutkiGrosh extends Controller {
                 $arItem['invItemId'] = $line_item['key'];
                 $arItem['desc'] = $line_item['name']. ' '.$line_item['model'];
                 $arItem['count'] = round($line_item['quantity']);
-                $arItem['amt'] = round($line_item['total']);
+                $arItem['amt'] = $line_item['total'];
                 $arItems[] = $arItem;
                 unset($arItem);
             }
         }
 //
-        $total = round($order_info['total']);
+        $total = $order_info['total'];
         $data = array(
             'eripId' => $this->config->get('hutkigrosh_storeid'),
             'invId' => $order_id,
