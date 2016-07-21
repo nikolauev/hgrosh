@@ -230,22 +230,22 @@ class HootkiGrosh
         $Bill = new \SimpleXMLElement("<BgpbPayParam></BgpbPayParam>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
         $Bill->addChild('billId',$data['billId']);
-        $products = $Bill->addChild('orderData');
-        $products->addChild('paymentId',1234567890);
-        $products->addChild('spClaimId',$data['spClaimId']);
-        $products->addChild('amount', $data['amount']);
-        $products->addChild('currency', '974');
-        $products->addChild('clientFio', $data['clientFio']);
-        $products->addChild('clientAddress', $data['clientAddress']);
-        $products->addChild('trxId');
+//        $products = $Bill->addChild('orderData');
+//        $products->addChild('eripId',$data['eripId']);
+//        $products->addChild('spClaimId',$data['spClaimId']);
+//        $products->addChild('amount', $data['amount']);
+//        $products->addChild('currency', '933');
+//        $products->addChild('clientFio', $data['clientFio']);
+//        $products->addChild('clientAddress', $data['clientAddress']);
+//        $products->addChild('trxId');
         $Bill->addChild('returnUrl', htmlspecialchars($data['returnUrl']));
         $Bill->addChild('cancelReturnUrl', htmlspecialchars($data['cancelReturnUrl']));
+        $Bill->addChild('submitValue', 'Оплатить картой на i24.by(БГПБ)');
 
         $xml = $Bill->asXML();
         // запрос
         $this->requestPost('Pay/BgpbPay', $xml);
         $responseXML = simplexml_load_string($this->response);
-
         return $responseXML->form->__toString();
     }
 

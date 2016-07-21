@@ -96,10 +96,10 @@ class ControllerPaymentHutkiGrosh extends Controller {
 
         $dataBgpb = array(
             'billId' => $this->_billID,
-            'paymentId' => 1234567890,
+            'eripId' => $this->config->get('hutkigrosh_storeid'),
             'spClaimId' => $order_id,
             'amount' => $total,
-            'currency' => 974,
+            'currency' => 933,
             'clientFio' => $order_info['firstname'].' '.$order_info['lastname'],
             'clientAddress' => $order_info['payment_address_1'].' '.$order_info['payment_address_2'].' '.$order_info['payment_zone'],
             'returnUrl' => $this->url->link('payment/hutkigrosh/notify'),
@@ -112,8 +112,53 @@ class ControllerPaymentHutkiGrosh extends Controller {
         echo '<h1>Спасибо за заказ!</h2>';
         echo '<h1>Счет для оплаты в системе ЕРИП: ' . $order_id . '</h2>';
         echo '<hr>';
+		echo '<h2>Для оплаты через карту, в системе БелГазПромБанка</h2>';
+		echo $hg->apiBgpbPay($dataBgpb);
         $hg->apiLogOut();
 ?>
+<br>
+<hr>
+<h2>Форма для выставления счета в системе AlfaClick</h2>
+<div class="alfaclick">
+            <input type="hidden" value="<?=$this->_billID?>" id="billID">
+            <input type="hidden" value="<?=$this->base_url?>" id="cookie">
+            <input type="text" maxlength="20" value="<?=$order_info['telephone']?>" id="phone">
+            <button>Выставить счет в AlfaClick</button>
+        </div>
+        <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $(document).on('click','button',function(){
+                    console.log('click');
+                    var phone = $('#phone').val();
+                    var billid = $('#billID').val();
+                    var coockie = $('#cookie').val();
+                    var is_test = <?=$this->test;?>;
+                    var login = "<?=$name?>";
+                    var pwd = "<?=$pwd?>";
+                    $.post('/hgrosh/alfaclick.php',
+                        {
+                            phone : phone,
+                            billid : billid,
+                            coockie : coockie,
+                            is_test : is_test,
+                            login : login,
+                            pwd : pwd
+                        }
+                    ).done(function(data){
+                            console.log(data);
+                            if(data == '0'){
+                                alert('Не удалось выставить счет в системе AlfaClick');
+                            }else{
+                                alert('Выставлен счет в системе AlfaClick');
+                            }
+
+                        });
+                });
+
+            });
+
+        </script>
         <div class="buttons">
             <div class="pull-right"><a href= "<?=HTTP_SERVER?>index.php?route=checkout/success" class="btn btn-primary">Продолжить</a></div>
         </div>

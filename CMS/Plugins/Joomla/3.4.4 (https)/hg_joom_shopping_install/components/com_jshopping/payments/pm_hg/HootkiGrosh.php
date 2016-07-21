@@ -10,14 +10,15 @@ namespace Alexantr\HootkiGrosh;
 class HootkiGrosh
 {
     private static $cookies_file;
+
     private $base_url; // url api
-    private $coockDir; // url api
+
     private $ch; // curl object
     private $error; // ошибка запроса (если есть)
     private $response; // тело ответа
     private $status; // код статуса
 
-    private $cookies_dir;
+    public $cookies_dir;
 
     // api url
     private $api_url = 'https://www.hutkigrosh.by/API/v1/'; // рабочий
@@ -61,7 +62,7 @@ class HootkiGrosh
     /**
      * @param bool $is_test Использовать ли тестовый api
      */
-    public function __construct($is_test = true)
+    public function __construct($is_test = false)
     {
         if ($is_test) {
             $this->base_url = $this->test_api_url;
@@ -114,7 +115,7 @@ class HootkiGrosh
 
         // проверим, верны ли логин/пароль
         if ($res && !preg_match('/true/', $this->response)) {
-            $this->error = 'Error authorize';
+            $this->error = 'Ошибка авторизации';
             return false;
         }
 
@@ -164,7 +165,7 @@ class HootkiGrosh
         if (isset($data['email'])) {
             $Bill->addChild('email', trim($data['email'])); // опционально
         }
-        $Bill->addChild('notifyByEMail', 'true');
+        $Bill->addChild('notifyByEMail', 'false');
         if (isset($data['fullAddress'])) {
             $Bill->addChild('fullAddress', trim($data['fullAddress'])); // опционально
         }
@@ -216,9 +217,8 @@ class HootkiGrosh
         return false;
     }
 
-
     /**
-     * Добавляет новый счет в систему
+     * Добавляет новый счет в систему БелГазПромБанк
      *
      * @param array $data
      *
@@ -230,28 +230,28 @@ class HootkiGrosh
         $Bill = new \SimpleXMLElement("<BgpbPayParam></BgpbPayParam>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
         $Bill->addChild('billId',$data['billId']);
-        $products = $Bill->addChild('orderData');
-        $products->addChild('paymentId',1234567890);
-        $products->addChild('spClaimId',$data['spClaimId']);
-        $products->addChild('amount', $data['amount']);
-        $products->addChild('currency', '974');
-        $products->addChild('clientFio', $data['clientFio']);
-        $products->addChild('clientAddress', $data['clientAddress']);
-        $products->addChild('trxId');
+//        $products = $Bill->addChild('orderData');
+//        $products->addChild('eripId',$data['eripId']);
+//        $products->addChild('spClaimId',$data['spClaimId']);
+//        $products->addChild('amount', $data['amount']);
+//        $products->addChild('currency', '933');
+//        $products->addChild('clientFio', $data['clientFio']);
+//        $products->addChild('clientAddress', $data['clientAddress']);
+//        $products->addChild('trxId');
         $Bill->addChild('returnUrl', htmlspecialchars($data['returnUrl']));
         $Bill->addChild('cancelReturnUrl', htmlspecialchars($data['cancelReturnUrl']));
+        $Bill->addChild('submitValue', 'Оплатить картой на i24.by(БГПБ)');
 
         $xml = $Bill->asXML();
         // запрос
-        $res = $this->requestPost('Pay/BgpbPay', $xml);
+        $this->requestPost('Pay/BgpbPay', $xml);
         $responseXML = simplexml_load_string($this->response);
-
         return $responseXML->form->__toString();
     }
 
 
     /**
-     * Добавляет новый счет в систему
+     * Добавляет новый счет в систему AllfaClick
      *
      * @param array $data
      *
@@ -269,10 +269,8 @@ class HootkiGrosh
         $res = $this->requestPost('Pay/AlfaClick', $xml);
         $responseXML = simplexml_load_string($this->response);
 
-        return $responseXML->form->__toString();
+        return $responseXML;
     }
-
-
 
     /**
      * Извлекает информацию о выставленном счете
@@ -381,7 +379,7 @@ class HootkiGrosh
      */
     public function getError()
     {
-        return $this->error;
+        return 'Счет не выставлен! Произошла ошибка: '.$this->error.'. <br> Повторите заказ.';
     }
 
     /**
@@ -486,13 +484,15 @@ class HootkiGrosh
         }
 
         $cookies_path = $this->cookies_dir . DIRECTORY_SEPARATOR . self::$cookies_file;
-        $this->coockDir = $cookies_path;
+
         // если файла еще нет, то создадим его при залогинивании и будем затем использовать при дальнейших запросах
         if (!is_file($cookies_path)) {
             curl_setopt($this->ch, CURLOPT_COOKIEJAR, $cookies_path);
         }
         curl_setopt($this->ch, CURLOPT_COOKIEFILE, $cookies_path);
+
         $this->response = curl_exec($this->ch);
+
         if (curl_errno($this->ch)) {
             $this->error = curl_error($this->ch);
             curl_close($this->ch);
@@ -519,6 +519,7 @@ class HootkiGrosh
         }
         return $array;
     }
+
     /**
      * Описание ошибки на основе ее кода в ответе
      *
@@ -529,5 +530,10 @@ class HootkiGrosh
     private function getStatusError($status)
     {
         return (isset($this->status_error[$status])) ? $this->status_error[$status] : 'Неизвестная ошибка';
+    }
+
+    public function getStatusResponce()
+    {
+        return $this->status;
     }
 }

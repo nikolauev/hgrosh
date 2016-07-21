@@ -88,10 +88,10 @@ class ControllerPaymentHutkiGrosh extends Controller {
 
         $dataBgpb = array(
             'billId' => $this->_billID,
-            'paymentId' => 1234567890,
+            'eripId' => $this->config->get('hutkigrosh_storeid'),
             'spClaimId' => $order_id,
             'amount' => $total,
-            'currency' => 974,
+            'currency' => 933,
             'clientFio' => $order_info['firstname'].' '.$order_info['lastname'],
             'clientAddress' => $order_info['payment_address_1'].' '.$order_info['payment_address_2'].' '.$order_info['payment_zone'],
             'returnUrl' => $this->url->link('payment/hutkigrosh/notify'),
@@ -104,7 +104,7 @@ class ControllerPaymentHutkiGrosh extends Controller {
         echo '<h1>Спасибо за заказ!</h2>';
         echo '<h1>Счет для оплаты в системе ЕРИП: ' . $order_id . '</h2>';
         echo '<hr>';
-        print_r($hg->apiBgpbPay($dataBgpb));
+        echo $hg->apiBgpbPay($dataBgpb);
         ?>
         <br>
         <hr>

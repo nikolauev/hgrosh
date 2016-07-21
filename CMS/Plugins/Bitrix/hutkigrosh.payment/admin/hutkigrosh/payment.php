@@ -111,10 +111,10 @@ if (!$billID) {
 
 $dataBgpb = array(
     'billId' => $billID,
-    'paymentId' => 1234567890, // внести в опции
+    'eripId' => $arPropPS['ERIP'], // внести в опции
     'spClaimId' => $ORDER_ID,
     'amount' => $totalSummOrder,
-    'currency' => 974,
+    'currency' => 933,
     'clientFio' => $GLOBALS["SALE_INPUT_PARAMS"]['USER']['NAME'].' '.$GLOBALS["SALE_INPUT_PARAMS"]['USER']['LAST_NAME'],
     'clientAddress' => $GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['CITY'].' '.$GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['ADDRESS'],
     'returnUrl' => $arPropPS['HG_RETURN_URL'],

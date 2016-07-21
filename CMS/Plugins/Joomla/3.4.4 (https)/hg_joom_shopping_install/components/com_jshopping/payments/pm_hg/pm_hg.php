@@ -109,10 +109,10 @@ class pm_hg extends PaymentRoot
         }
         $dataBgpb = array(
             'billId' => $this->_billID,
-            'paymentId' => 1234567890,
+            'eripId' => $pmconfigs['hgrosh_store_id'],
             'spClaimId' => $order_id,
             'amount' => $order->order_total,
-            'currency' => 974,
+            'currency' => 933,
             'clientFio' => $order->f_name.' '.$order->l_name,
             'clientAddress' => $order->city.' '.$order->state.' '.$order->street,
             'returnUrl' => $pmconfigs['hgrosh_return_url'],

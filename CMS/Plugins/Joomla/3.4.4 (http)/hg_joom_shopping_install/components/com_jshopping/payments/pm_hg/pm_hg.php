@@ -109,10 +109,10 @@ class pm_hg extends PaymentRoot
         }
         $dataBgpb = array(
             'billId' => $this->_billID,
-            'paymentId' => 1234567890,
+            'eripId' => $pmconfigs['hgrosh_store_id'],
             'spClaimId' => $order_id,
             'amount' => $order->order_total,
-            'currency' => 974,
+            'currency' => 933,
             'clientFio' => $order->f_name.' '.$order->l_name,
             'clientAddress' => $order->city.' '.$order->state.' '.$order->street,
             'returnUrl' => $pmconfigs['hgrosh_return_url'],
@@ -121,7 +121,7 @@ class pm_hg extends PaymentRoot
 
         echo '<h1>Спасибо за заказ!</h2>';
         echo '<h1>Счет для оплаты в системе ЕРИП: ' . $order_id . '</h2>';
-        print_r($hg->apiBgpbPay($dataBgpb));
+        echo $hg->apiBgpbPay($dataBgpb);
         ?>
         <br>
         <hr>

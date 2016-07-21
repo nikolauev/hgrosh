@@ -223,24 +223,24 @@ function gateway_hutkigrosh($separator, $sessionid)
         }
         // выставляем счет в другие системы ------------------------------------------------------------------------------------------
 
-//        $dataBgpb = array(
-//            'billId' => $billID,
-//            'paymentId' => 1234567890,
-//            'spClaimId' => $order_id,
-//            'amount' => $total,
-//            'currency' => 974,
-//            'clientFio' => $arForm['billingfirstname'].' '.$arForm['billinglastname'],
-//            'clientAddress' => $arForm['billingstate'].' '.$arForm['billingcity'].' '.$arForm['billingaddress'],
-//            'returnUrl' => $arParams['ap_return_url'],
-//            'cancelReturnUrl' => $arParams['ap_cancel_return_url'],
-//        );
+        $dataBgpb = array(
+            'billId' => $billID,
+            'eripId' => $arParams['ap_storeid'],
+            'spClaimId' => $order_id,
+            'amount' => $total,
+            'currency' => 933,
+            'clientFio' => $arForm['billingfirstname'].' '.$arForm['billinglastname'],
+            'clientAddress' => $arForm['billingstate'].' '.$arForm['billingcity'].' '.$arForm['billingaddress'],
+            'returnUrl' => $arParams['ap_return_url'],
+            'cancelReturnUrl' => $arParams['ap_cancel_return_url'],
+        );
 
         echo '<h1>Спасибо за заказ!</h2>';
         echo '<h1>Счет для оплаты в системе ЕРИП: ' . $order_id . '</h2>';
         echo '<hr>';
-//        print_r($hg->apiBgpbPay($dataBgpb));
+		echo '<h2>Для оплаты через карту, в системе БелГазПромБанка</h2>';
+        print_r($hg->apiBgpbPay($dataBgpb));
         ?>
-
     <hr>
     <a href="/">Вернуться на сайт.</a>
     <hr>
