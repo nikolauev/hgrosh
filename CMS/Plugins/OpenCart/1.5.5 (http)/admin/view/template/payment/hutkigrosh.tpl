@@ -33,6 +33,18 @@
         <td><input type="text" name="hutkigrosh_pswd" value="<?php echo $hutkigrosh_pswd; ?>" /></td>
     </tr>
     <tr>
+        <td><?php echo $text_order_status_pending; ?></td>
+        <td><input type="text" name="hutkigrosh_order_status_pending" value="<?php echo $hutkigrosh_order_status_pending; ?>" /></td>
+    </tr>
+    <tr>
+        <td><?php echo $text_order_status_payed; ?></td>
+        <td><input type="text" name="hutkigrosh_order_status_payed" value="<?php echo $hutkigrosh_order_status_payed; ?>" /></td>
+    </tr>
+    <tr>
+        <td><?php echo $text_order_status_error; ?></td>
+        <td><input type="text" name="hutkigrosh_order_status_error" value="<?php echo $hutkigrosh_order_status_error; ?>" /></td>
+    </tr>
+    <tr>
         <td><?php echo $text_test; ?></td>
         <td><?php if ($hutkigrosh_test) { ?>
             <input type="checkbox" name="hutkigrosh_test" value="1" checked="checked" />

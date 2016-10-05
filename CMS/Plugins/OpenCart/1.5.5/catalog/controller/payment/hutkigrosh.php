@@ -118,41 +118,44 @@ class ControllerPaymentHutkiGrosh extends Controller {
         <script>
             $(document).ready(function(){
                 $(document).on('click','button',function(){
-                    console.log('click');
-                    var phone = $('#phone').val();
-                    var billid = $('#billID').val();
-                    var coockie = $('#cookie').val();
-                    var is_test = <?=$this->test;?>;
-                    var login = "<?=$name?>";
-                    var pwd = "<?=$pwd?>";
-                    $.post('/hgrosh/alfaclick.php',
+                    $.post('<?=$this->url->link('payment/hutkigrosh/alfaclick')?>',
                         {
-                            phone : phone,
-                            billid : billid,
-                            coockie : coockie,
-                            is_test : is_test,
-                            login : login,
-                            pwd : pwd
+                            phone : $('#phone').val(),
+                            billid : $('#billID').val()
                         }
                     ).done(function(data){
-                            console.log(data);
                             if(data == '0'){
                                 alert('Не удалось выставить счет в системе AlfaClick');
                             }else{
                                 alert('Выставлен счет в системе AlfaClick');
                             }
-
                         });
                 });
 
             });
-
         </script>
         <?
         $hg->apiLogOut();
 
 
         //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    }
+
+    public function alfaclick(){
+        $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get('hutkigrosh_test'));
+        $res = $hg->apiLogIn($this->config->get('hutkigrosh_login'), $this->config->get('hutkigrosh_pswd'));
+        if (!$res) {
+            echo $hg->getError();
+            $hg->apiLogOut();
+            exit;
+        }
+        $data = array(
+            'billid'=>$this->request->post['billid'],
+            'phone'=>$this->request->post['phone']
+        );
+        $responceXML =  simplexml_load_string($hg->apiAlfaClick($data));
+        $hg->apiLogOut();
+        echo $responceXML->__toString();
     }
     
 	# нажатие кнопки "<< Назад в магазин" 
@@ -168,34 +171,42 @@ class ControllerPaymentHutkiGrosh extends Controller {
 	}
 
 	#уведомление об оплате
-	public function notify() {
-        $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get('hutkigrosh_test'));
-		if(isset($hg_data["purchaseid"])) {
-            $this->_login = $this->config->get('hutkigrosh_login'); // имя пользователя
-            $this->_pwd = $this->config->get('hutkigrosh_pswd'); // пароль
-            $name = $this->_login;
-            $pwd = $this->_pwd;
-            $res = $hg->apiLogIn($name, $pwd);
+    public function notify() {
+        $pendingStatusId = $this->config->get('hutkigrosh_order_status_pending');
+        $payedStatusId = $this->config->get('hutkigrosh_order_status_payed');
+        $errorStatusId = $this->config->get('hutkigrosh_order_status_error');
 
-            // Ошибка авторизации
-            if (!$res) {
-                echo $hg->getError();
-                $hg->apiLogOut(); // Завершаем сеанс
-                exit;
+        if(is_numeric($pendingStatusId) || is_numeric($payedStatusId) || is_numeric($errorStatusId)){
+            if (isset($this->request->get['purchaseid'])) {
+                $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get('hutkigrosh_test'));
+                $res = $hg->apiLogIn($this->config->get('hutkigrosh_login'), $this->config->get('hutkigrosh_pswd'));
+
+                if (!$res) {
+                    echo $hg->getError();
+                    $hg->apiLogOut();
+                    exit;
+                }
+
+                $info = $hg->apiBillInfo($this->request->get['purchaseid']);
+                if(empty($info)){
+                    echo $hg->getError();
+                }else{
+                    $this->load->model('checkout/order');
+                    if($info['statusEnum']=='Payed'){
+                        if(is_numeric($payedStatusId))
+                            $this->model_checkout_order->update(IntVal($info['invId']), $payedStatusId);
+                    }elseif(in_array($info['statusEnum'],array('Outstending','DeletedByUser','PaymentCancelled'))){
+                        if(is_numeric($errorStatusId))
+                            $this->model_checkout_order->update(IntVal($info['invId']), $errorStatusId);
+                    }elseif(in_array($info['statusEnum'],array('PaymentPending','NotSet'))){
+                        if(is_numeric($pendingStatusId))
+                            $this->model_checkout_order->update(IntVal($info['invId']), $pendingStatusId);
+                    }
+                }
+                $hg->apiLogOut();
             }
-
-            $info = $hg->apiBillInfo($hg_data["purchaseid"]);
-            if (!$info) {
-                echo $hg->getError();
-                $hg->apiLogOut(); // Завершаем сеанс
-                exit;
-            }
-
-			$order_mer_code = IntVal($info['invId']);
-			$this->load->model('checkout/order');
-			$this->model_checkout_order->update($order_mer_code, $this->config->get('processing_status_id'));
-		}
-	}
+        }
+    }
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

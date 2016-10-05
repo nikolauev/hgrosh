@@ -17,3 +17,7 @@ $_['text_disabled'] = 'Disabled';
 $_['text_save'] = 'Savae';
 $_['text_cancel'] = 'Cancel';
 $_['sort_order'] = 'Sort order:';
+
+$_['text_order_status_pending'] = 'Pending payment status id';
+$_['text_order_status_payed'] = 'Payed status id';
+$_['text_order_status_error'] = 'Error payment status id';

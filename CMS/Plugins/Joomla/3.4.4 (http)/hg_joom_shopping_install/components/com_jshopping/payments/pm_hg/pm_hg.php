@@ -57,9 +57,8 @@ class pm_hg extends PaymentRoot
         $is_test = ($pmconfigs['hgrosh_test'] == 1) ? true : false; // тестовый api
 
         $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($is_test);
-//        ?>
-<!--        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>-->
-<!--        --><?//
+        /*?><script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script><?*/
+
         $order_id = $order->order_id;
         $this->_login = $pmconfigs['hgrosh_login']; // имя пользователя
         $this->_pwd = $pmconfigs['hgrosh_pswd']; // пароль
@@ -68,6 +67,7 @@ class pm_hg extends PaymentRoot
         $res = $hg->apiLogIn($name, $pwd);
         $_SESSION['hg_login'] = $this->_login;
         $_SESSION['hg_pwd'] = $this->_pwd;
+        $_SESSION['hg_test'] = $is_test;
         // Ошибка авторизации
         if (!$res) {
             echo $hg->getError();
@@ -133,29 +133,19 @@ class pm_hg extends PaymentRoot
         </div>
         <script>
             jQuery(document).on('click','button',function(){
-                var phone = jQuery('#phone').val();
-                var billid = jQuery('#billID').val();
-                var coockie = jQuery('#cookie').val();
-                var is_test = <?=$pmconfigs['hgrosh_test']?>;
-                var login = "<?=$_SESSION['hg_login']?>";
-                var pwd = "<?=$_SESSION['hg_pwd']?>";
                 jQuery.post('/hgrosh/alfaclick.php',
                     {
-                        phone : phone,
-                        billid : billid,
-                        coockie : coockie,
-                        is_test : is_test,
-                        login : login,
-                        pwd : pwd
+                        phone : jQuery('#phone').val(),
+                        billid : jQuery('#billID').val()
                     }
                 ).done(function(data){
                         if(data == '0')
-                        alert('Выставлен счет в системе AlfaClick')
-                    });
+                            alert('Не удалось выставить счет в системе AlfaClick');
+                        else
+                            alert('Выставлен счет в системе AlfaClick');
+                });
             });
-
-            </script>
-        <?
+        </script><?
         $hg->apiLogOut();
     }
 

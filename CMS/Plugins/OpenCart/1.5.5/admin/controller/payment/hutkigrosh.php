@@ -92,6 +92,10 @@ class ControllerPaymentHutkiGrosh extends Controller {
         } else {
             $this->data['hutkigrosh_status'] = $this->config->get('hutkigrosh_status');
         }
+
+        $data['hutkigrosh_order_status_pending'] = isset($this->request->post['hutkigrosh_order_status_pending'])?$this->request->post['hutkigrosh_order_status_pending']:$this->config->get('hutkigrosh_order_status_pending');
+        $data['hutkigrosh_order_status_payed'] = isset($this->request->post['hutkigrosh_order_status_payed'])?$this->request->post['hutkigrosh_order_status_payed']:$this->config->get('hutkigrosh_order_status_payed');
+        $data['hutkigrosh_order_status_error'] = isset($this->request->post['hutkigrosh_order_status_error'])?$this->request->post['hutkigrosh_order_status_error']:$this->config->get('hutkigrosh_order_status_error');
         
         if (isset($this->request->post['hutkigrosh_sort_order'])) {
             $this->data['hutkigrosh_sort_order'] = $this->request->post['hutkigrosh_sort_order'];
