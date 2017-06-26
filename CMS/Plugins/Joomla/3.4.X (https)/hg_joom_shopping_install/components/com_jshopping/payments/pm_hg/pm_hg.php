@@ -57,8 +57,9 @@ class pm_hg extends PaymentRoot
         $is_test = ($pmconfigs['hgrosh_test'] == 1) ? true : false; // тестовый api
 
         $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($is_test);
-        /*?><script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script><?*/
-
+//        ?>
+<!--        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>-->
+<!--        --><?//
         $order_id = $order->order_id;
         $this->_login = $pmconfigs['hgrosh_login']; // имя пользователя
         $this->_pwd = $pmconfigs['hgrosh_pswd']; // пароль
@@ -143,9 +144,9 @@ class pm_hg extends PaymentRoot
                             alert('Не удалось выставить счет в системе AlfaClick');
                         else
                             alert('Выставлен счет в системе AlfaClick');
-                });
+                    });
             });
-        </script><?
+        </script><?php
         $hg->apiLogOut();
     }
 
@@ -195,4 +196,3 @@ class pm_hg extends PaymentRoot
 
 
 }
-?>

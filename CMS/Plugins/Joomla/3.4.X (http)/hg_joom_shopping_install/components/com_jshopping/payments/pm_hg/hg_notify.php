@@ -1,4 +1,4 @@
-<?
+<?php
 /*
 * @info Платёжный модуль hutkigrosh для JoomShopping
 * @package JoomShopping for Joomla!

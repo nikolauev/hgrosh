@@ -16,9 +16,9 @@ defined('_JEXEC') or die();
 				<td class="key" width="300"><?php echo _JSHOP_CFG_HGROSH_TEST; ?></td>
 				<td>
 					<label for="hgrosh_test_yes"><?php echo _JSHOP_CFG_HGROSH_TEST_YES; ?></label>
-					<input id="hgrosh_test_yes" type="radio" name="pm_params[hgrosh_test]" class="radiobox" value="1" <?if(($params['hgrosh_test']=="")||($params['hgrosh_test']==1)):?> checked<?endif;?> />
+					<input id="hgrosh_test_yes" type="radio" name="pm_params[hgrosh_test]" class="radiobox" value="1" <?php if(($params['hgrosh_test']=="")||($params['hgrosh_test']==1)):?> checked<?php endif;?> />
 					<label for="hgrosh_test_no"><?php echo _JSHOP_CFG_HGROSH_TEST_NO; ?></label>
-					<input id="hgrosh_test_no" type="radio" name="pm_params[hgrosh_test]" class="radiobox" value="0" <?if(($params['hgrosh_test']!="")&&($params['hgrosh_test']==0)):?> checked<?endif;?> />
+					<input id="hgrosh_test_no" type="radio" name="pm_params[hgrosh_test]" class="radiobox" value="0" <?php if(($params['hgrosh_test']!="")&&($params['hgrosh_test']==0)):?> checked<?php endif;?> />
 					<?php echo JHTML::tooltip(_JSHOP_CFG_HGROSH_TEST_DESCRIPTION); ?>
 				</td>
 			</tr>
