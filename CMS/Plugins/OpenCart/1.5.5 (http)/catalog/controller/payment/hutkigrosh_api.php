@@ -21,8 +21,8 @@ class HootkiGrosh
     public $cookies_dir;
 
     // api url
-    private $api_url = 'http://www.hutkigrosh.by/API/v1/'; // рабочий
-    private $test_api_url = 'http://trial.hgrosh.by/API/v1/'; // тестовый
+    private $api_url = 'https://www.hutkigrosh.by/API/v1/'; // рабочий
+    private $test_api_url = 'https://trial.hgrosh.by/API/v1/'; // тестовый
 
     // Список ошибок
     private $status_error = array(
@@ -217,19 +217,80 @@ class HootkiGrosh
         return false;
     }
 
-    public function apiAlfaClick($data)
+    /**
+     * Добавляет новый счет в систему БелГазПромБанк
+     *
+     * @param array $data
+     *
+     * @return bool|string
+     */
+    public function apiBgpbPay($data)
+    {
+        // формируем xml
+        $Bill = new \SimpleXMLElement("<BgpbPayParam></BgpbPayParam>");
+        $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
+        $Bill->addChild('billId',$data['billId']);
+//        $products = $Bill->addChild('orderData');
+//        $products->addChild('eripId',$data['eripId']);
+//        $products->addChild('spClaimId',$data['spClaimId']);
+//        $products->addChild('amount', $data['amount']);
+//        $products->addChild('currency', '933');
+//        $products->addChild('clientFio', $data['clientFio']);
+//        $products->addChild('clientAddress', $data['clientAddress']);
+//        $products->addChild('trxId');
+        $Bill->addChild('returnUrl', htmlspecialchars($data['returnUrl']));
+        $Bill->addChild('cancelReturnUrl', htmlspecialchars($data['cancelReturnUrl']));
+        $Bill->addChild('submitValue', 'Оплатить картой на i24.by(БГПБ)');
+
+        $xml = $Bill->asXML();
+        // запрос
+        $this->requestPost('Pay/BgpbPay', $xml);
+        $responseXML = simplexml_load_string($this->response);
+        return $responseXML->form->__toString();
+    }
+
+
+    /**
+     * Добавляет новый счет в систему AllfaClick
+     *
+     * @param array $data
+     *
+     * @return bool|string
+     */
+    public function apiAlfaClick($billId, $phone)
     {
         // формируем xml
         $Bill = new \SimpleXMLElement("<AlfaClickParam></AlfaClickParam>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
-        $Bill->addChild('billid',$data['billid']);
-        $Bill->addChild('phone',$data['phone']);
+        $Bill->addChild('billId',$billId);
+        $Bill->addChild('phone',$phone);
         $xml = $Bill->asXML();
         // запрос
         $res = $this->requestPost('Pay/AlfaClick', $xml);
-        $responseXML = simplexml_load_string($this->response);
-
-        return $this->response;
+        $responseXML = simplexml_load_string($this->response); // 0 – если произошла ошибка, billId – если удалось выставить счет в AlfaClick
+        return $responseXML;
+    }
+    
+    /**
+     * Получение формы виджета для оплаты картой
+     *
+     * @param array $data
+     *
+     * @return bool|string
+     */
+    public function apiWebPay($data) {
+        // формируем xml
+        $Bill = new \SimpleXMLElement("<WebPayParam></WebPayParam>");
+        $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
+        $Bill->addChild('billId', $data['billId']);
+        $Bill->addChild('returnUrl', htmlspecialchars($data['returnUrl']));
+        $Bill->addChild('cancelReturnUrl', htmlspecialchars($data['cancelReturnUrl']));
+        $Bill->addChild('submitValue', "Pay with card");
+        $xml = $Bill->asXML();
+        // запрос
+        $res = $this->requestPost('Pay/WebPay', $xml);
+        $responseXML = simplexml_load_string($this->response, null, LIBXML_NOCDATA);
+        return $responseXML->form->__toString();
     }
 
     /**
@@ -339,7 +400,7 @@ class HootkiGrosh
      */
     public function getError()
     {
-        return $this->error;
+        return 'Счет не выставлен! Произошла ошибка: '.$this->error.'. <br> Повторите заказ.';
     }
 
     /**
@@ -427,7 +488,7 @@ class HootkiGrosh
         $headers = array('Content-Type: application/xml', 'Content-Length: ' . strlen($data));
 
         $this->ch = curl_init();
-
+        
         curl_setopt($this->ch, CURLOPT_URL, $this->base_url . $path);
         curl_setopt($this->ch, CURLOPT_HEADER, false); // включение заголовков в выводе
         curl_setopt($this->ch, CURLOPT_VERBOSE, true); // вывод доп. информации в STDERR
@@ -490,5 +551,10 @@ class HootkiGrosh
     private function getStatusError($status)
     {
         return (isset($this->status_error[$status])) ? $this->status_error[$status] : 'Неизвестная ошибка';
+    }
+
+    public function getStatusResponce()
+    {
+        return $this->status;
     }
 }

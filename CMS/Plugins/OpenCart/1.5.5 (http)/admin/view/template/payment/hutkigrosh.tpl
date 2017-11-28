@@ -34,15 +34,42 @@
     </tr>
     <tr>
         <td><?php echo $text_order_status_pending; ?></td>
-        <td><input type="text" name="hutkigrosh_order_status_pending" value="<?php echo $hutkigrosh_order_status_pending; ?>" /></td>
+        <td><select name="hutkigrosh_order_status_pending">
+                <?php foreach ($order_statuses as $order_status) { ?>
+                <?php if ($order_status['order_status_id'] == $hutkigrosh_order_status_pending) { ?>
+                <option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+                <?php } else { ?>
+                <option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name']; ?></option>
+                <?php } ?>
+                <?php } ?>
+            </select>
+        </td>
     </tr>
     <tr>
         <td><?php echo $text_order_status_payed; ?></td>
-        <td><input type="text" name="hutkigrosh_order_status_payed" value="<?php echo $hutkigrosh_order_status_payed; ?>" /></td>
+        <td><select name="hutkigrosh_order_status_payed">
+                <?php foreach ($order_statuses as $order_status) { ?>
+                <?php if ($order_status['order_status_id'] == $hutkigrosh_order_status_payed) { ?>
+                <option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+                <?php } else { ?>
+                <option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name']; ?></option>
+                <?php } ?>
+                <?php } ?>
+            </select>
+        </td>
     </tr>
     <tr>
         <td><?php echo $text_order_status_error; ?></td>
-        <td><input type="text" name="hutkigrosh_order_status_error" value="<?php echo $hutkigrosh_order_status_error; ?>" /></td>
+        <td><select name="hutkigrosh_order_status_error">
+                <?php foreach ($order_statuses as $order_status) { ?>
+                <?php if ($order_status['order_status_id'] == $hutkigrosh_order_status_error) { ?>
+                <option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+                <?php } else { ?>
+                <option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name']; ?></option>
+                <?php } ?>
+                <?php } ?>
+            </select>
+        </td>
     </tr>
     <tr>
         <td><?php echo $text_test; ?></td>

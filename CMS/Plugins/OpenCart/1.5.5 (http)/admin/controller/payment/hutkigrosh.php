@@ -29,7 +29,10 @@ class ControllerPaymentHutkiGrosh extends Controller {
         $this->data['text_disabled'] = $this->language->get('text_disabled');
         $this->data['button_save']   = $this->language->get('text_save');
         $this->data['button_cancel'] = $this->language->get('text_cancel');
-        $this->data['text_sort_order'] = $this->language->get('sort_order');
+        $this->data['text_sort_order'] = $this->language->get('text_sort_order');
+        $this->data['text_order_status_pending'] = $this->language->get('text_order_status_pending');
+        $this->data['text_order_status_payed'] = $this->language->get('text_order_status_payed');
+        $this->data['text_order_status_error'] = $this->language->get('text_order_status_error');
 
         // Предупреждение об ошибках
         if (isset($this->error['warning'])) {
@@ -93,9 +96,27 @@ class ControllerPaymentHutkiGrosh extends Controller {
             $this->data['hutkigrosh_status'] = $this->config->get('hutkigrosh_status');
         }
 
-        $data['hutkigrosh_order_status_pending'] = isset($this->request->post['hutkigrosh_order_status_pending'])?$this->request->post['hutkigrosh_order_status_pending']:$this->config->get('hutkigrosh_order_status_pending');
-        $data['hutkigrosh_order_status_payed'] = isset($this->request->post['hutkigrosh_order_status_payed'])?$this->request->post['hutkigrosh_order_status_payed']:$this->config->get('hutkigrosh_order_status_payed');
-        $data['hutkigrosh_order_status_error'] = isset($this->request->post['hutkigrosh_order_status_error'])?$this->request->post['hutkigrosh_order_status_error']:$this->config->get('hutkigrosh_order_status_error');
+        $this->load->model('localisation/order_status');
+        $this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+
+        if (isset($this->request->post['hutkigrosh_order_status_pending'])) {
+                    $this->data['hutkigrosh_order_status_pending'] = $this->request->post['hutkigrosh_order_status_pending'];
+                } else {
+                    $this->data['hutkigrosh_order_status_pending'] = $this->config->get('hutkigrosh_order_status_pending');
+        }
+
+        if (isset($this->request->post['hutkigrosh_order_status_payed'])) {
+                            $this->data['hutkigrosh_order_status_payed'] = $this->request->post['hutkigrosh_order_status_payed'];
+                        } else {
+                            $this->data['hutkigrosh_order_status_payed'] = $this->config->get('hutkigrosh_order_status_payed');
+        }
+
+        if (isset($this->request->post['hutkigrosh_order_status_error'])) {
+                            $this->data['hutkigrosh_order_status_error'] = $this->request->post['hutkigrosh_order_status_error'];
+                        } else {
+                            $this->data['hutkigrosh_order_status_error'] = $this->config->get('hutkigrosh_order_status_error');
+        }
+
         
         if (isset($this->request->post['hutkigrosh_sort_order'])) {
             $this->data['hutkigrosh_sort_order'] = $this->request->post['hutkigrosh_sort_order'];
@@ -129,3 +150,4 @@ class ControllerPaymentHutkiGrosh extends Controller {
     }
 
 }
+?>

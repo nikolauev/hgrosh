@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
-include_once  'class_hutkigrosh.php';
+include_once 'hutkigrosh_api.php';
 class ControllerPaymentHutkiGrosh extends Controller {
 	// Транслитерация строк.
 
@@ -86,7 +86,7 @@ class ControllerPaymentHutkiGrosh extends Controller {
         }
         // выставляем счет в другие системы ------------------------------------------------------------------------------------------
 
-        $dataBgpb = array(
+        $orderData = array(
             'billId' => $this->_billID,
             'eripId' => $this->config->get('hutkigrosh_storeid'),
             'spClaimId' => $order_id,
@@ -94,51 +94,73 @@ class ControllerPaymentHutkiGrosh extends Controller {
             'currency' => 933,
             'clientFio' => $order_info['firstname'].' '.$order_info['lastname'],
             'clientAddress' => $order_info['payment_address_1'].' '.$order_info['payment_address_2'].' '.$order_info['payment_zone'],
-            'returnUrl' => $this->url->link('payment/hutkigrosh/notify'),
-            'cancelReturnUrl' => $this->url->link('payment/hutkigrosh/fail'),
+            'returnUrl' => $this->url->link('payment/hutkigrosh/notify') . "&" . "purchaseid=" . $this->_billID,
+            'cancelReturnUrl' => $this->url->link('payment/hutkigrosh/notify') . "&" . "purchaseid=" . $this->_billID,
         );
 
-        $this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('cod_order_status_id'));
+        $this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('hutkigrosh_order_status_pending'));
 
-
-        echo '<h1>Спасибо за заказ!</h2>';
-        echo '<h1>Счет для оплаты в системе ЕРИП: ' . $order_id . '</h2>';
-        echo '<hr>';
-        echo $hg->apiBgpbPay($dataBgpb);
-        ?>
-        <br>
-        <hr>
-        <div class="alfaclick">
-            <input type="hidden" value="<?=$this->_billID?>" id="billID">
-            <input type="hidden" value="<?=$this->base_url?>" id="cookie">
-            <input type="text" maxlength="20" value="<?=$order_info['telephone']?>" id="phone">
-            <button>Выставить счет в AlfaClick</button>
-        </div>
-        <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
-        <script>
-            $(document).ready(function(){
-                $(document).on('click','button',function(){
-                    $.post('<?=$this->url->link('payment/hutkigrosh/alfaclick')?>',
-                        {
-                            phone : $('#phone').val(),
-                            billid : $('#billID').val()
-                        }
-                    ).done(function(data){
-                            if(data == '0'){
-                                alert('Не удалось выставить счет в системе AlfaClick');
-                            }else{
-                                alert('Выставлен счет в системе AlfaClick');
-                            }
-                        });
-                });
-
-            });
-        </script>
-        <?
+        $this->data['webpayform'] = $hg->apiWebPay($orderData);
         $hg->apiLogOut();
-
+        $this->checkoutSuccess($order_info);
 
         //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    }
+    
+    public function checkoutSuccess($order_info) {
+        $this->document->setTitle($this->language->get('heading_title'));
+
+        $this->data['breadcrumbs'] = array();
+
+        $this->data['breadcrumbs'][] = array(
+            'href' => $this->url->link('common/home'),
+            'text' => $this->language->get('text_home'),
+            'separator' => false
+        );
+
+        $this->data['breadcrumbs'][] = array(
+            'href' => $this->url->link('checkout/cart'),
+            'text' => $this->language->get('text_basket'),
+            'separator' => $this->language->get('text_separator')
+        );
+
+        $this->data['breadcrumbs'][] = array(
+            'href' => $this->url->link('checkout/checkout', '', 'SSL'),
+            'text' => $this->language->get('text_checkout'),
+            'separator' => $this->language->get('text_separator')
+        );
+
+        $this->data['breadcrumbs'][] = array(
+            'href' => $this->url->link('checkout/success'),
+            'text' => $this->language->get('text_success'),
+            'separator' => $this->language->get('text_separator')
+        );
+        
+        $this->data['heading_title'] = $this->language->get('heading_title');    
+        $this->data['text_message'] = sprintf($this->language->get('text_erip_instruction'), $this->session->data['order_id'], $this->session->data['order_id']);
+        $this->data['button_continue'] = $this->language->get('button_continue');
+        $this->data['continue'] = $this->url->link('checkout/success');
+
+        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/hutkigrosh_checkout_success.tpl')) {
+            $this->template = $this->config->get('config_template') . '/template/payment/hutkigrosh_checkout_success.tpl';
+        } else {
+            $this->template = 'default/template/payment/hutkigrosh_checkout_success.tpl';
+        }
+
+        $this->children = array(
+            'common/column_left',
+            'common/column_right',
+            'common/content_top',
+            'common/content_bottom',
+            'common/footer',
+            'common/header'
+        );
+        
+        $this->data['alfaclickbillID'] = $this->_billID;
+//        $this->data['alfaclickBaseUrl'] = $this->base_url;
+        $this->data['alfaclickTelephone'] = preg_replace("/[^0-9]/", '', $order_info['telephone']);
+
+        $this->response->setOutput($this->render());
     }
 
     public function alfaclick(){
@@ -149,15 +171,11 @@ class ControllerPaymentHutkiGrosh extends Controller {
             $hg->apiLogOut();
             exit;
         }
-        $data = array(
-            'billid'=>$this->request->post['billid'],
-            'phone'=>$this->request->post['phone']
-        );
-        $responceXML =  simplexml_load_string($hg->apiAlfaClick($data));
+        $responceXML = $hg->apiAlfaClick($this->request->post['billid'], $this->request->post['phone']);
         $hg->apiLogOut();
         echo $responceXML->__toString();
     }
-    
+
 	# нажатие кнопки "<< Назад в магазин" 
 	public function fail() {
 		$this->redirect($this->url->link('checkout/checkout'));
@@ -180,13 +198,12 @@ class ControllerPaymentHutkiGrosh extends Controller {
             if (isset($this->request->get['purchaseid'])) {
                 $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get('hutkigrosh_test'));
                 $res = $hg->apiLogIn($this->config->get('hutkigrosh_login'), $this->config->get('hutkigrosh_pswd'));
-
                 if (!$res) {
                     echo $hg->getError();
                     $hg->apiLogOut();
                     exit;
                 }
-
+                #дополнительно проверим статус счета в hg
                 $info = $hg->apiBillInfo($this->request->get['purchaseid']);
                 if(empty($info)){
                     echo $hg->getError();
@@ -207,11 +224,4 @@ class ControllerPaymentHutkiGrosh extends Controller {
             }
         }
 	}
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private $base_url; // url api
-    private $test;
-
-
 }

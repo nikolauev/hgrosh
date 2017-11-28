@@ -16,7 +16,7 @@ $_['text_enabled'] = 'Включено';
 $_['text_disabled'] = 'Отключено';
 $_['text_save'] = 'Сохранить';
 $_['text_cancel'] = 'Отмена';
-$_['sort_order'] = 'Порядок сортировки';
+$_['text_sort_order'] = 'Порядок сортировки';
 
 $_['text_order_status_pending'] = 'Идентикатор статуса ожидания оплаты';
 $_['text_order_status_payed'] = 'Идентикатор статуса успешнй оплаты';
