@@ -1,7 +1,7 @@
 <?php
 // Text
 $_['heading_title']        = 'Your order has been successfully added to ERIP! ';
-$_['text_title']    = 'Hutkigrosh (ERIP)';
+$_['text_title']    = 'ERIP (Hutkigrosh)';
 $_['text_loading']    = 'Loading...';
 $_['text_reason'] 	= 'Reason';
 $_['text_testmode']	= 'Payment Gateway in \'Sandbox \'. Funds from your account will not be removed.';
@@ -20,5 +20,5 @@ $_['text_erip_instruction'] = '<p>Your order has been successfully added to ERIP
 <li>Complete payment</li>
 </ol>';
 
-//TODO добавить в русский
+$_['text_webpay_error'] = 'Webpay error!';
 ?>

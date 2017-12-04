@@ -32,7 +32,7 @@
                       class="form-horizontal">
                     <div class="form-group required">
                         <label class="col-sm-2 control-label" for="input-hutkigrosh_storeid">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_storeid_help; ?>" data-original-title="">
                             <?php echo $text_storeid; ?>
                         </span>
                         </label>
@@ -45,7 +45,7 @@
 
                     <div class="form-group required">
                         <label class="col-sm-2 control-label" for="input-hutkigrosh_store">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_store_help; ?>" data-original-title="">
                             <?php echo $text_store; ?>
                         </span>
                         </label>
@@ -58,7 +58,7 @@
 
                     <div class="form-group required">
                         <label class="col-sm-2 control-label" for="input-hutkigrosh_login">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_login_help; ?>" data-original-title="">
                             <?php echo $text_login; ?>
                         </span>
                         </label>
@@ -71,7 +71,7 @@
 
                     <div class="form-group required">
                         <label class="col-sm-2 control-label" for="input-hutkigrosh_pswd">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_pswd_help; ?>" data-original-title="">
                             <?php echo $text_pswd; ?>
                         </span>
                         </label>
@@ -132,7 +132,7 @@
                         </label>
                         <div class="col-sm-10">
                             <select class="form-control" id="input-hutkigrosh_order_status_error"
-                                    name="hutkigrosh_order_status_errror">
+                                    name="hutkigrosh_order_status_error">
                                 <?php foreach ($order_statuses as $order_status) { ?>
                                 <?php if ($order_status['order_status_id'] == $hutkigrosh_order_status_error) { ?>
                                 <option value="<?php echo $order_status['order_status_id']; ?>"
@@ -147,7 +147,7 @@
 
                     <div class="form-group required">
                         <label class="col-sm-2 control-label" for="input-hutkigrosh_erip_tree_path">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_erip_tree_path_help; ?>" data-original-title="">
                             <?php echo $text_erip_tree_path; ?>
                         </span>
                         </label>

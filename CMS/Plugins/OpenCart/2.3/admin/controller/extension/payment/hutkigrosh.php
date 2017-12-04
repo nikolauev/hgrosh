@@ -26,10 +26,14 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
         $data['text_payment'] = $this->language->get('text_payment');
         $data['text_success'] = $this->language->get('text_success');
         $data['text_storeid'] = $this->language->get('text_storeid');
+        $data['text_storeid_help'] = $this->language->get('text_storeid_help');
         $data['text_store'] = $this->language->get('text_store');
+        $data['text_store_help'] = $this->language->get('text_store_help');
         $data['text_test'] = $this->language->get('text_test');
         $data['text_login'] = $this->language->get('text_login');
+        $data['text_login_help'] = $this->language->get('text_login_help');
         $data['text_pswd'] = $this->language->get('text_pswd');
+        $data['text_pswd_help'] = $this->language->get('text_pswd_help');
         $data['text_status'] = $this->language->get('text_status');
         $data['text_enabled'] = $this->language->get('text_enabled');
         $data['text_disabled'] = $this->language->get('text_disabled');
@@ -40,6 +44,7 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
         $data['text_order_status_payed'] = $this->language->get('text_order_status_payed');
         $data['text_order_status_error'] = $this->language->get('text_order_status_error');
         $data['text_erip_tree_path'] = $this->language->get('text_erip_tree_path');
+        $data['text_erip_tree_path_help'] = $this->language->get('text_erip_tree_path_help');
 
         // Предупреждение об ошибках
         if (isset($this->error['warning'])) {

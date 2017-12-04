@@ -2,14 +2,19 @@
 
 $_['heading_title'] = 'HutkiGrosh';
 
+$_['text_hutkigrosh'] = '<img src="view/image/payment/raschet.png" alt="Расчёт (ЕРИП)" title="Расчёт (ЕРИП)" style="border: 1px solid #EEEEEE;" />';
 $_['text_payment'] = 'Оплата';
 $_['text_success'] = 'Настройки модуля обновлены!';
 
 
 $_['text_storeid'] = 'Уникальный идентификатор услуги ЕРИП:';
+$_['text_storeid_help'] = '';
 $_['text_store'] = 'Название магазина:';
+$_['text_storeid_help'] = '';
 $_['text_login'] = 'Логин интернет-магазина:';
+$_['text_login_help'] = 'Ваш логин в системе ХуткiГрош';
 $_['text_pswd'] = 'Пароль Интернет магазина:';
+$_['text_pswd_help'] = 'Ваш пароль в системе ХуткiГрош';
 $_['text_test'] = 'Режим песочницы:';
 $_['text_status'] = 'Статус:';
 $_['text_enabled'] = 'Включено';
@@ -18,6 +23,7 @@ $_['text_save'] = 'Сохранить';
 $_['text_cancel'] = 'Отмена';
 $_['text_sort_order'] = 'Порядок сортировки';
 $_['text_erip_tree_path'] = 'Путь в дереве ЕРИП';
+$_['text_erip_tree_path_help'] = 'Путь в дереве ЕРИП для оплаты выставленного счета. Будет показан клиенту после оформления заказа (например: Платежи > Магазин > Оплата)';
 
 $_['text_order_status_pending'] = 'Идентикатор статуса ожидания оплаты';
 $_['text_order_status_payed'] = 'Идентикатор статуса успешнй оплаты';

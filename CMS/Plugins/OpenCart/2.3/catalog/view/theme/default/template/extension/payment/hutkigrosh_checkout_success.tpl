@@ -16,6 +16,9 @@
         <div id="content" class="<?php echo $class; ?>"><?php echo $content_top; ?>
             <h1><?php echo $heading_title; ?></h1>
             <?php echo $text_message; ?>
+            <?php if ($message) { ?>
+                <div class="alert alert-danger" id="message"><?php echo $message; ?></div>
+            <?php } ?>
             <div class="buttons" >
                 <div class="pull-right">
                     <div class="webpayform">
