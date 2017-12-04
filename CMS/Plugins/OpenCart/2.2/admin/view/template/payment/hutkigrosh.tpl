@@ -32,7 +32,7 @@
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-hutkigrosh_storeid">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_storeid_help; ?>" data-original-title="">
                             <?php echo $text_storeid; ?>
                         </span>
                     </label>
@@ -45,7 +45,7 @@
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-hutkigrosh_store">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_store_help; ?>" data-original-title="">
                             <?php echo $text_store; ?>
                         </span>
                     </label>
@@ -58,7 +58,7 @@
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-hutkigrosh_login">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_login_help; ?>" data-original-title="">
                             <?php echo $text_login; ?>
                         </span>
                     </label>
@@ -71,7 +71,7 @@
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-hutkigrosh_pswd">
-                        <span data-toggle="tooltip" title="" data-original-title="">
+                        <span data-toggle="tooltip" title="<?php echo $text_pswd_help; ?>" data-original-title="">
                             <?php echo $text_pswd; ?>
                         </span>
                     </label>
@@ -89,9 +89,17 @@
                         </span>
                     </label>
                     <div class="col-sm-10">
-                        <input type="text" name="hutkigrosh_order_status_pending" value="<?php echo $hutkigrosh_order_status_pending; ?>"
-                            placeholder="<?php echo $text_order_status_pending; ?>"
-                            id="input-hutkigrosh_order_status_pending" class="form-control">
+                            <select class="form-control" id="input-hutkigrosh_order_status_pending"
+                                    name="hutkigrosh_order_status_pending">
+                                <?php foreach ($order_statuses as $order_status) { ?>
+                                <?php if ($order_status['order_status_id'] == $hutkigrosh_order_status_pending) { ?>
+                                <option value="<?php echo $order_status['order_status_id']; ?>"
+                                        selected="selected"><?php echo $order_status['name']; ?></option>
+                                <?php } else { ?>
+                                <option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name']; ?></option>
+                                <?php } ?>
+                                <?php } ?>
+                            </select>
                     </div>
                 </div>
 
@@ -102,9 +110,17 @@
                         </span>
                     </label>
                     <div class="col-sm-10">
-                        <input type="text" name="hutkigrosh_order_status_payed" value="<?php echo $hutkigrosh_order_status_payed; ?>"
-                            placeholder="<?php echo $text_order_status_payed; ?>"
-                            id="input-hutkigrosh_order_status_payed" class="form-control">
+                            <select class="form-control" id="input-hutkigrosh_order_status_payed"
+                                    name="hutkigrosh_order_status_payed">
+                                <?php foreach ($order_statuses as $order_status) { ?>
+                                <?php if ($order_status['order_status_id'] == $hutkigrosh_order_status_payed) { ?>
+                                <option value="<?php echo $order_status['order_status_id']; ?>"
+                                        selected="selected"><?php echo $order_status['name']; ?></option>
+                                <?php } else { ?>
+                                <option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name']; ?></option>
+                                <?php } ?>
+                                <?php } ?>
+                            </select>
                     </div>
                 </div>
 
@@ -115,9 +131,30 @@
                         </span>
                     </label>
                     <div class="col-sm-10">
-                        <input type="text" name="hutkigrosh_order_status_error" value="<?php echo $hutkigrosh_order_status_error; ?>"
-                            placeholder="<?php echo $text_order_status_error; ?>"
-                            id="input-hutkigrosh_order_status_error" class="form-control">
+                            <select class="form-control" id="input-hutkigrosh_order_status_error"
+                                    name="hutkigrosh_order_status_error">
+                                <?php foreach ($order_statuses as $order_status) { ?>
+                                <?php if ($order_status['order_status_id'] == $hutkigrosh_order_status_error) { ?>
+                                <option value="<?php echo $order_status['order_status_id']; ?>"
+                                        selected="selected"><?php echo $order_status['name']; ?></option>
+                                <?php } else { ?>
+                                <option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name']; ?></option>
+                                <?php } ?>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-hutkigrosh_erip_tree_path">
+                        <span data-toggle="tooltip" title="<?php echo $text_erip_tree_path_help; ?>" data-original-title="">
+                            <?php echo $text_erip_tree_path; ?>
+                        </span>
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="text" name="hutkigrosh_erip_tree_path" value="<?php echo $hutkigrosh_erip_tree_path; ?>"
+                                   placeholder="<?php echo $text_erip_tree_path; ?>"
+                                   id="input-hutkigrosh_erip_tree_path" class="form-control">
                     </div>
                 </div>
 
@@ -151,10 +188,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-2 control-label" for="hutkigrosh_status"><?php echo $hutkigrosh_status; ?></label>
-                    <div class="col-sm-10" id="hutkigrosh_status">
-                        <select class="form-control" id="hutkigrosh_status" name="hutkigrosh_status">
-                            <?php if (hutkigrosh_status) { ?>
+                        <label class="col-sm-2 control-label" for="input-status"><?php echo $text_status; ?></label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="input-status" name="hutkigrosh_status">
+                                <?php if ($hutkigrosh_status) { ?>
                             <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
                             <option value="0"><?php echo $text_disabled; ?></option>
                             <?php } else { ?>

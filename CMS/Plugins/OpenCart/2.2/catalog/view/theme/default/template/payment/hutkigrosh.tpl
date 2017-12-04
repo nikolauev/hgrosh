@@ -1,39 +1,14 @@
 <?php if ($testmode) { ?>
-<div class="warning"><?php echo $text_testmode; ?></div>
+<div class="alert alert-info"><?php echo $text_testmode; ?></div>
 <?php } ?>
-<div class="content">
-<form action="<?php echo $action; ?>" method="post">
-</form>
+<div class="buttons">
+    <div class="pull-right">
+        <a href="<?php echo $action; ?>" class="btn btn-primary" id="button-confirm"
+           data-loading-text="<?php echo $text_loading; ?>"><?php echo $button_confirm; ?></a>
     </div>
-    <div class="buttons">
-        <div class="pull-right">
-            <input type="button" value="<?php echo $button_confirm; ?>" id="button-confirm" class="btn btn-primary" />
-        </div>
-    </div>
-<script type="text/javascript">
-    $('#button-confirm').bind('click', function() {
-        location.href = "index.php?route=payment/hutkigrosh/send";
-//        $.ajax({
-//            url: 'index.php?route=payment/hutkigrosh/send',
-//            type: 'post',
-//            data: $('#payment :input'),
-//            dataType: 'json',
-//            cache: false,
-//            beforeSend: function() {
-//                $('#button-confirm').button('loading');
-//            },
-//            complete: function() {
-//                $('#button-confirm').button('reset');
-//            },
-//            success: function(json) {
-//                if (json['error']) {
-//                    alert(json['error']);
-//                }
-//
-//                if (json['redirect']) {
-//                    location = json['redirect'];
-//                }
-//            }
-//        });
+</div>
+<script type="text/javascript"><!--
+    $('#button-confirm').on('click', function () {
+        $('#button-confirm').button('loading');
     });
-</script>
+    //--></script>
