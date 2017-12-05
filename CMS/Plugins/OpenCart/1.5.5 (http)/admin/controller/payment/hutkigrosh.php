@@ -4,7 +4,7 @@ class ControllerPaymentHutkiGrosh extends Controller {
 
     public function index() {
 
-        $this->language->load('payment/hutkigrosh');
+        $this->load->language('payment/hutkigrosh');
         $this->load->model('setting/setting');
 
         // Сохранение или обновление данных
@@ -33,12 +33,37 @@ class ControllerPaymentHutkiGrosh extends Controller {
         $this->data['text_order_status_pending'] = $this->language->get('text_order_status_pending');
         $this->data['text_order_status_payed'] = $this->language->get('text_order_status_payed');
         $this->data['text_order_status_error'] = $this->language->get('text_order_status_error');
+        $this->data['text_erip_tree_path'] = $this->language->get('text_erip_tree_path');
 
         // Предупреждение об ошибках
         if (isset($this->error['warning'])) {
             $this->data['error_warning'] = $this->error['warning'];
         } else {
             $this->data['error_warning'] = '';
+        }
+
+        if (isset($this->error['hutkigrosh_storeid'])) {
+            $this->data['error_storeid_required'] = $this->error['hutkigrosh_storeid'];
+        } else {
+            $this->data['error_storeid_required'] = '';
+        }
+
+        if (isset($this->error['hutkigrosh_store'])) {
+            $this->data['error_storename_required'] = $this->error['hutkigrosh_store'];
+        } else {
+            $this->data['error_storename_required'] = '';
+        }
+
+        if (isset($this->error['hutkigrosh_login'])) {
+            $this->data['error_hglogin_required'] = $this->error['hutkigrosh_login'];
+        } else {
+            $this->data['error_hglogin_required'] = '';
+        }
+
+        if (isset($this->error['hutkigrosh_pswd'])) {
+            $this->data['error_hgpassword_required'] = $this->error['hutkigrosh_pswd'];
+        } else {
+            $this->data['error_hgpassword_required'] = '';
         }
 
         // Генерация хлебных крошек
@@ -100,21 +125,21 @@ class ControllerPaymentHutkiGrosh extends Controller {
         $this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
         if (isset($this->request->post['hutkigrosh_order_status_pending'])) {
-                    $this->data['hutkigrosh_order_status_pending'] = $this->request->post['hutkigrosh_order_status_pending'];
+            $this->data['hutkigrosh_order_status_pending'] = $this->request->post['hutkigrosh_order_status_pending'];
                 } else {
-                    $this->data['hutkigrosh_order_status_pending'] = $this->config->get('hutkigrosh_order_status_pending');
+            $this->data['hutkigrosh_order_status_pending'] = $this->config->get('hutkigrosh_order_status_pending');
         }
 
         if (isset($this->request->post['hutkigrosh_order_status_payed'])) {
-                            $this->data['hutkigrosh_order_status_payed'] = $this->request->post['hutkigrosh_order_status_payed'];
+            $this->data['hutkigrosh_order_status_payed'] = $this->request->post['hutkigrosh_order_status_payed'];
                         } else {
-                            $this->data['hutkigrosh_order_status_payed'] = $this->config->get('hutkigrosh_order_status_payed');
+            $this->data['hutkigrosh_order_status_payed'] = $this->config->get('hutkigrosh_order_status_payed');
         }
 
         if (isset($this->request->post['hutkigrosh_order_status_error'])) {
-                            $this->data['hutkigrosh_order_status_error'] = $this->request->post['hutkigrosh_order_status_error'];
+            $this->data['hutkigrosh_order_status_error'] = $this->request->post['hutkigrosh_order_status_error'];
                         } else {
-                            $this->data['hutkigrosh_order_status_error'] = $this->config->get('hutkigrosh_order_status_error');
+            $this->data['hutkigrosh_order_status_error'] = $this->config->get('hutkigrosh_order_status_error');
         }
 
         
@@ -122,6 +147,12 @@ class ControllerPaymentHutkiGrosh extends Controller {
             $this->data['hutkigrosh_sort_order'] = $this->request->post['hutkigrosh_sort_order'];
         } else {
             $this->data['hutkigrosh_sort_order'] = $this->config->get('hutkigrosh_sort_order');
+        }
+
+        if (isset($this->request->post['hutkigrosh_erip_tree_path'])) {
+            $this->data['hutkigrosh_erip_tree_path'] = $this->request->post['hutkigrosh_erip_tree_path'];
+        } else {
+            $this->data['hutkigrosh_erip_tree_path'] = $this->config->get('hutkigrosh_erip_tree_path');
         }
 
         // Кнопки
@@ -138,8 +169,23 @@ class ControllerPaymentHutkiGrosh extends Controller {
     }
 
     protected function validate() {
-        if (!$this->user->hasPermission('modify', 'payment/pp_standard')) {
+        if (!$this->user->hasPermission('modify', 'payment/hutkigrosh')) {
             $this->error['warning'] = $this->language->get('error_permission');
+        }
+
+        if (!$this->request->post['hutkigrosh_storeid']) {
+          $this->error['companyid'] = $this->language->get('error_storeid_required');
+        }
+
+        if (!$this->request->post['hutkigrosh_store']) {
+          $this->error['encryptionkey'] = $this->language->get('error_storename_required');
+        }
+
+        if (!$this->request->post['hutkigrosh_login']) {
+            $this->error['domain_api'] = $this->language->get('error_hglogin_required');
+        }
+        if (!$this->request->post['hutkigrosh_pswd']) {
+          $this->error['service_no'] = $this->language->get('error_hgpassword_required');
         }
 
         if (!$this->error) {

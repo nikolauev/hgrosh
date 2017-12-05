@@ -33,6 +33,10 @@
         <td><input type="text" name="hutkigrosh_pswd" value="<?php echo $hutkigrosh_pswd; ?>" /></td>
     </tr>
     <tr>
+        <td><?php echo $text_erip_tree_path; ?></td>
+        <td><input type="text" name="hutkigrosh_erip_tree_path" value="<?php echo $hutkigrosh_erip_tree_path; ?>" /></td>
+    </tr>
+    <tr>
         <td><?php echo $text_order_status_pending; ?></td>
         <td><select name="hutkigrosh_order_status_pending">
                 <?php foreach ($order_statuses as $order_status) { ?>
