@@ -492,6 +492,7 @@ class HootkiGrosh
 
         curl_setopt($this->ch, CURLOPT_URL, $this->base_url . $path);
         curl_setopt($this->ch, CURLOPT_HEADER, false); // включение заголовков в выводе
+        curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 30); // включение заголовков в выводе
         curl_setopt($this->ch, CURLOPT_VERBOSE, true); // вывод доп. информации в STDERR
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false); // не проверять сертификат узла сети
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false); // проверка существования общего имени в сертификате SSL

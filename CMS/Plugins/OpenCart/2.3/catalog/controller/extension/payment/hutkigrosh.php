@@ -5,6 +5,17 @@ include_once 'hutkigrosh_api.php';
 class ControllerExtensionPaymentHutkiGrosh extends Controller
 {
     // Транслитерация строк.
+    const HUTKIGROSH_STOREID = 'hutkigrosh_storeid';
+    const HUTKIGROSH_STORE_NAME = 'payment_hutkigrosh_store';
+    const HUTKIGROSH_LOGIN = 'hutkigrosh_login';
+    const HUTKIGROSH_PASSWORD = 'hutkigrosh_pswd';
+    const HUTKIGROSH_SANDBOX = 'hutkigrosh_test';
+    const HUTKIGROSH_MODULE_STATUS = 'payment_hutkigrosh_status';
+    const HUTKIGROSH_MODULE_SORT_ORDER = 'payment_hutkigrosh_sort_order';
+    const HUTKIGROSH_ORDER_STATUS_PENDING = 'hutkigrosh_order_status_pending';
+    const HUTKIGROSH_ORDER_STATUS_PAYED = 'hutkigrosh_order_status_payed';
+    const HUTKIGROSH_ORDER_STATUS_ERROR = 'hutkigrosh_order_status_error';
+    const HUTKIGROSH_ERIP_TREE_PATH = 'payment_hutkigrosh_erip_tree_path';
 
     public function index()
     {
@@ -12,7 +23,7 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
         $data['text_testmode'] = $this->language->get('text_testmode');
         $data['button_confirm'] = $this->language->get('button_confirm');
         $data['text_loading'] = $this->language->get('text_loading');
-        $data['testmode'] = $this->config->get('hutkigrosh_test');
+        $data['testmode'] = $this->config->get(self::HUTKIGROSH_SANDBOX);
         $data['action'] = $this->url->link('extension/payment/hutkigrosh/pay');
         $data['continue'] = $this->url->link('checkout/success');
 
@@ -35,16 +46,11 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
             }
             $this->load->model('checkout/order');
             $localOrderInfo = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-            $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('pending_status_id'));
-            $order_id = $localOrderInfo["order_id"];
-            $this->_login = $this->config->get('hutkigrosh_login'); // имя пользователя
-            $this->_pwd = $this->config->get('hutkigrosh_pswd'); // пароль
-            $name = $this->_login;
-            $pwd = $this->_pwd;
+            $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get(self::HUTKIGROSH_ORDER_STATUS_PENDING));
 
-            $this->test = $this->config->get('hutkigrosh_test');
-            $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get('hutkigrosh_test'));
-            $res = $hg->apiLogIn($name, $pwd);
+            $this->test = $this->config->get(self::HUTKIGROSH_SANDBOX);
+            $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get(self::HUTKIGROSH_SANDBOX));
+            $res = $hg->apiLogIn($this->config->get(self::HUTKIGROSH_LOGIN), $this->config->get(self::HUTKIGROSH_PASSWORD));
 
             // Ошибка авторизации
             if (!$res) {
@@ -68,8 +74,8 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
             }
 //
             $billNewRq = new \Alexantr\HootkiGrosh\BillNewRq();
-            $billNewRq->eripId = $this->config->get('hutkigrosh_storeid');
-            $billNewRq->invId = $order_id;
+            $billNewRq->eripId = $this->config->get(self::HUTKIGROSH_STOREID);
+            $billNewRq->invId = $localOrderInfo["order_id"];
             $billNewRq->fullName = $localOrderInfo['firstname'] . ' ' . $localOrderInfo['lastname'];
             $billNewRq->mobilePhone = $localOrderInfo['telephone'];
             $billNewRq->email = $localOrderInfo['email'];
@@ -88,8 +94,8 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
 
             $webPayRq = new \Alexantr\HootkiGrosh\WebPayRq();
             $webPayRq->billId = $this->_billID;
-            $webPayRq->returnUrl = $this->url->link('extension/payment/hutkigrosh/notify') . "&" . "purchaseid=" . $this->_billID . "&status=complete";
-            $webPayRq->cancelReturnUrl = $this->url->link('extension/payment/hutkigrosh/notify') . "&" . "purchaseid=" . $this->_billID . "&status=error";
+            $webPayRq->returnUrl = $this->url->link('extension/payment/hutkigrosh/callback') . "&" . "purchaseid=" . $this->_billID . "&status=complete";
+            $webPayRq->cancelReturnUrl = $this->url->link('extension/payment/hutkigrosh/callback') . "&" . "purchaseid=" . $this->_billID . "&status=error";
 
             $webpayform = $hg->apiWebPay($webPayRq);
             $hg->apiLogOut();
@@ -103,8 +109,8 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
 
     public function alfaclick()
     {
-        $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get('hutkigrosh_test'));
-        $res = $hg->apiLogIn($this->config->get('hutkigrosh_login'), $this->config->get('hutkigrosh_pswd'));
+        $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get(self::HUTKIGROSH_SANDBOX));
+        $res = $hg->apiLogIn($this->config->get(self::HUTKIGROSH_LOGIN), $this->config->get(self::HUTKIGROSH_PASSWORD));
         if (!$res) {
             echo $hg->getError();
             $hg->apiLogOut();
@@ -119,12 +125,6 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
         echo $responceXML->__toString();
     }
 
-    # нажатие кнопки "<< Назад в магазин"
-    public function fail()
-    {
-        $this->redirect($this->url->link('checkout/checkout'));
-        return TRUE;
-    }
 
     protected function failure($error)
     {
@@ -132,68 +132,86 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
         $this->response->redirect($this->url->link('checkout/cart', '', true));
     }
 
-    # перенаправление клиента после оплаты
-    public function success()
-    {
-        $this->redirect($this->url->link('checkout/success'));
-        return TRUE;
-    }
-
-    #уведомление об оплате
-    public function notify()
+    public function callback()
     {
         try {
-            $this->language->load('extension/payment/hutkigrosh');
-            $pendingStatusId = $this->config->get('hutkigrosh_order_status_pending');
-            $payedStatusId = $this->config->get('hutkigrosh_order_status_payed');
-            $errorStatusId = $this->config->get('hutkigrosh_order_status_error');
-            $paystatus = $this->request->get['status'];
-
-            if (!is_numeric($pendingStatusId) || !is_numeric($payedStatusId) || !is_numeric($errorStatusId)) {
-                throw new Exception('Incorrect module configuration');
-            }
-            if (!isset($this->request->get['purchaseid'])) {
-                throw new Exception('Wrong purchaseid');
-            }
-
-            $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get('hutkigrosh_test'));
-            $res = $hg->apiLogIn($this->config->get('hutkigrosh_login'), $this->config->get('hutkigrosh_pswd'));
+            $biilId = $this->request->get['purchaseid'];
+            $this->checkOrderStatus($biilId);
+            $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get(self::HUTKIGROSH_SANDBOX));
+            $res = $hg->apiLogIn($this->config->get(self::HUTKIGROSH_LOGIN), $this->config->get(self::HUTKIGROSH_PASSWORD));
             if (!$res) {
                 $error = $hg->getError();
                 $hg->apiLogOut(); // Завершаем сеанс
-                return $this->failure($error);
+                throw new Exception($error);
             }
-            #дополнительно проверим статус счета в hg
-            $hgBillInfo = $hg->apiBillInfo($this->request->get['purchaseid']);
-            if (empty($hgBillInfo)) {
-                $error = $hg->getError();
-                $hg->apiLogOut(); // Завершаем сеанс
-                return $this->failure($error);
-            } else {
-                $this->load->model('checkout/order');
-                if ($hgBillInfo['statusEnum'] == 'Payed') {
-                    if (is_numeric($payedStatusId))
-                        $this->model_checkout_order->addOrderHistory(IntVal($hgBillInfo['invId']), $payedStatusId);
-                } elseif (in_array($hgBillInfo['statusEnum'], array('Outstending', 'DeletedByUser', 'PaymentCancelled')) or $paystatus == "error") {
-                    if (is_numeric($errorStatusId))
-                        $this->model_checkout_order->addOrderHistory(IntVal($hgBillInfo['invId']), $errorStatusId);
-                } elseif (in_array($hgBillInfo['statusEnum'], array('PaymentPending', 'NotSet'))) {
-                    if (is_numeric($pendingStatusId))
-                        $this->model_checkout_order->addOrderHistory(IntVal($hgBillInfo['invId']), $pendingStatusId);
-                }
-            }
-//                $hg->apiLogOut();
-
             $localOrderInfo = $this->model_checkout_order->getOrder($this->session->data['order_id']);
             $webPayRq = new \Alexantr\HootkiGrosh\WebPayRq();
-            $webPayRq->billId = $hgBillInfo['billID'];
-            $webPayRq->returnUrl = $this->url->link('extension/payment/hutkigrosh/notify') . "&" . "purchaseid=" . $hgBillInfo['billID'] . "&status=complete";
-            $webPayRq->cancelReturnUrl = $this->url->link('extension/payment/hutkigrosh/notify') . "&" . "purchaseid=" . $hgBillInfo['billID'] . "&status=error";
+            $webPayRq->billId = $biilId;
+            $webPayRq->returnUrl = $this->url->link('extension/payment/hutkigrosh/callback') . "&" . "purchaseid=" . $biilId . "&status=complete";
+            $webPayRq->cancelReturnUrl = $this->url->link('extension/payment/hutkigrosh/callback') . "&" . "purchaseid=" . $biilId . "&status=error";
             $webpayform = $hg->apiWebPay($webPayRq);
             $hg->apiLogOut();
-            $this->createPage($hgBillInfo['billID'], $localOrderInfo, $webpayform, $this->language->get('text_webpay_error'));
+            $this->createPage($biilId, $localOrderInfo, $webpayform, $this->language->get('text_webpay_error'));
         } catch (Exception $e) {
             return $this->failure($e->getMessage());
+        }
+    }
+
+    public function notify()
+    {
+        try {
+            $this->checkOrderStatus($this->request->get['purchaseid']);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+
+    #уведомление об оплате
+    protected function checkOrderStatus($purchaseid)
+    {
+        $this->language->load('extension/payment/hutkigrosh');
+        $pendingStatusId = $this->config->get(self::HUTKIGROSH_ORDER_STATUS_PENDING);
+        $payedStatusId = $this->config->get(self::HUTKIGROSH_ORDER_STATUS_PAYED);
+        $errorStatusId = $this->config->get(self::HUTKIGROSH_ORDER_STATUS_ERROR);
+
+        if (!is_numeric($pendingStatusId) || !is_numeric($payedStatusId) || !is_numeric($errorStatusId)) {
+            throw new Exception('Incorrect module configuration');
+        }
+        if (!isset($this->request->get['purchaseid'])) {
+            throw new Exception('Wrong purchaseid');
+        }
+
+        $hg = new \Alexantr\HootkiGrosh\HootkiGrosh($this->config->get(self::HUTKIGROSH_SANDBOX));
+        $res = $hg->apiLogIn($this->config->get(self::HUTKIGROSH_LOGIN), $this->config->get(self::HUTKIGROSH_PASSWORD));
+        if (!$res) {
+            $error = $hg->getError();
+            $hg->apiLogOut(); // Завершаем сеанс
+            throw new Exception($error);
+        }
+        #дополнительно проверим статус счета в hg
+        $hgBillInfo = $hg->apiBillInfo($purchaseid);
+        if (empty($hgBillInfo)) {
+            $error = $hg->getError();
+            $hg->apiLogOut(); // Завершаем сеанс
+            throw new Exception($error);
+        } else {
+            $this->load->model('checkout/order');
+            $localOrderInfo = $this->model_checkout_order->getOrder($hgBillInfo['invId']);
+            if ($localOrderInfo['firstname'] . ' ' . $localOrderInfo['lastname'] != $hgBillInfo['fullName']
+                && $localOrderInfo['total'] != $hgBillInfo['amt']) {
+                throw new Exception("Unmapped purchaseid");
+            }
+            if ($hgBillInfo['statusEnum'] == 'Payed') {
+                if (is_numeric($payedStatusId))
+                    $this->model_checkout_order->addOrderHistory(IntVal($hgBillInfo['invId']), $payedStatusId);
+            } elseif (in_array($hgBillInfo['statusEnum'], array('Outstending', 'DeletedByUser', 'PaymentCancelled'))) {
+                if (is_numeric($errorStatusId))
+                    $this->model_checkout_order->addOrderHistory(IntVal($hgBillInfo['invId']), $errorStatusId);
+            } elseif (in_array($hgBillInfo['statusEnum'], array('PaymentPending', 'NotSet'))) {
+                if (is_numeric($pendingStatusId))
+                    $this->model_checkout_order->addOrderHistory(IntVal($hgBillInfo['invId']), $pendingStatusId);
+            }
         }
     }
 
