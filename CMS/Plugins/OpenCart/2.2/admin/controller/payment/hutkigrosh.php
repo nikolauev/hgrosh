@@ -3,22 +3,13 @@ class ControllerPaymentHutkiGrosh extends Controller {
     private $error = array();
     public function index() {
 
-        $this->language->load('payment/hutkigrosh');
-
-        $this->load->language('extension/payment/hutkigrosh');
-
-        $this->document->setTitle($this->language->get('heading_title'));
-
+        $this->load->language('payment/hutkigrosh');
         $this->load->model('setting/setting');
 
         // Сохранение или обновление данных
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($this->validate())) {
-            $this->load->model('setting/setting');
-
             $this->model_setting_setting->editSetting('hutkigrosh', $this->request->post);
-
             $this->session->data['success'] = $this->language->get('text_success');
-
             $this->response->redirect($this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'));
         }
 
