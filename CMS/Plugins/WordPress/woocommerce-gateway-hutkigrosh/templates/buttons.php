@@ -4,9 +4,11 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <?php if ($_REQUEST['webpay_status'] == 'payed') { ?>
-    <div class="woocommerce-message" id="hutkigroshmessage"><?php echo __('webpay_success_text', 'woocommerce-hutkigrosh-payments') ?></div>
+    <div class="woocommerce-message"
+         id="hutkigroshmessage"><?php echo __('webpay_success_text', 'woocommerce-hutkigrosh-payments') ?></div>
 <?php } elseif ($_REQUEST['webpay_status'] == 'failed') { ?>
-    <div class="woocommerce-error" id="hutkigroshmessage"><?php echo __('webpay_failed_text', 'woocommerce-hutkigrosh-payments') ?></div>
+    <div class="woocommerce-error"
+         id="hutkigroshmessage"><?php echo __('webpay_failed_text', 'woocommerce-hutkigrosh-payments') ?></div>
 <?php } ?>
 <div class="hutkigrosh">
     <div class="alfaclick">
@@ -25,12 +27,13 @@ if (!defined('ABSPATH')) {
                         billid: $('#billID').val()
                     }
                 ).done(function (data) {
+                    <?php $alfaclick_complete_text = '\'<div class="woocommerce-message" id="hutkigroshmessage">' . __('alfaclick_success_text', 'woocommerce-hutkigrosh-payments') . '</div>\'' ?>
+                    <?php $alfaclick_failed_text = '\'<div class="woocommerce-error" id="hutkigroshmessage">' . __('alfaclick_failed_text', 'woocommerce-hutkigrosh-payments') . '</div>\'' ?>
+                    $('#hutkigroshmessage').remove();
                     if (Number(data) == '0') {
-                        $('#hutkigroshmessage').remove();
-                        $('.hutkigrosh').before('<div class="woocommerce-error" id="hutkigroshmessage">Не удалось выставить счет в системе AlfaClick</div>');
+                        $('.hutkigrosh').before(<?php echo $alfaclick_failed_text ?>);
                     } else {
-                        $('#hutkigroshmessage').remove();
-                        $('.hutkigrosh').before('<div class="woocommerce-message" id="hutkigroshmessage">Выставлен счет в системе AlfaClick</div>');
+                        $('.hutkigrosh').before(<?php echo $alfaclick_complete_text ?>);
                     }
                 })
             })

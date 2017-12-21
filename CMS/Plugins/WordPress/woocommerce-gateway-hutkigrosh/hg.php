@@ -241,6 +241,7 @@ class WC_HUTKIGROSH_GATEWAY extends WC_Payment_Gateway
             self::HUTKIGROSH_SANDBOX => array(
                 'title' => __("hutkigrosh_sandbox_title", 'woocommerce-hutkigrosh-payments'),
                 'desc_tip' => __('hutkigrosh_sandbox_desk', 'woocommerce-hutkigrosh-payments'),
+                'label' => __('hutkigrosh_sandbox_label', 'woocommerce-hutkigrosh-payments'),
                 'type' => 'checkbox',
                 'default' => 'no',
             )
