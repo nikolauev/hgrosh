@@ -141,8 +141,8 @@ class WC_HUTKIGROSH_GATEWAY extends WC_Payment_Gateway
             }
             $webPayRq = new \ESAS\HootkiGrosh\WebPayRq();
             $webPayRq->billId = $billId;
-            $webPayRq->returnUrl = "http://test.com/success";
-            $webPayRq->cancelReturnUrl = "http://test.com/failed"; //TODO сгенерировать правильные URL
+            $webPayRq->returnUrl = $order->get_checkout_order_received_url() . '&webpay_status=payed';
+            $webPayRq->cancelReturnUrl = $order->get_checkout_order_received_url() . '&webpay_status=failed';
             $webpayform = $hg->apiWebPay($webPayRq);
             $hg->apiLogOut();
             //echo $webpayform;
