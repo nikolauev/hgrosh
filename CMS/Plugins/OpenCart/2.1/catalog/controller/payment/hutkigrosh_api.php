@@ -144,7 +144,7 @@ class HootkiGrosh
      *
      * @return bool|string
      */
-    public function apiBillNew($data)
+    public function apiBillNew(BillNewRq $billNewRq)
     {
         // выберем валюту
         $curr = isset($data['curr']) ? trim($data['curr']) : 'BYN';
@@ -155,29 +155,27 @@ class HootkiGrosh
         // формируем xml
         $Bill = new \SimpleXMLElement("<Bill></Bill>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/api/invoicing');
-        $Bill->addChild('eripId', trim($data['eripId']));
-        $Bill->addChild('invId', trim($data['invId']));
+        $Bill->addChild('eripId', trim($billNewRq->eripId));
+        $Bill->addChild('invId', trim($billNewRq->invId));
         $Bill->addChild('dueDt', date('c', strtotime('+1 day'))); // +1 день
         $Bill->addChild('addedDt', date('c'));
-        $Bill->addChild('fullName', trim($data['fullName']));
-        $Bill->addChild('mobilePhone', trim($data['mobilePhone']));
+        $Bill->addChild('fullName', trim($billNewRq->fullName));
+        $Bill->addChild('mobilePhone', trim($billNewRq->mobilePhone));
         $Bill->addChild('notifyByMobilePhone', 'false');
-        if (isset($data['email'])) {
-            $Bill->addChild('email', trim($data['email'])); // опционально
+        if (isset($billNewRq->email)) {
+            $Bill->addChild('email', trim($billNewRq->email)); // опционально
         }
         $Bill->addChild('notifyByEMail', 'false');
-        if (isset($data['fullAddress'])) {
-            $Bill->addChild('fullAddress', trim($data['fullAddress'])); // опционально
+        if (isset($billNewRq->fullAddress)) {
+            $Bill->addChild('fullAddress', trim($billNewRq->fullAddress)); // опционально
         }
-        if (isset($data['amt'])) {
-            $Bill->addChild('amt', (float)$data['amt']); // опционально
-        }
-        $Bill->addChild('curr', $curr);
+        $Bill->addChild('amt', (float)$billNewRq->amount); // опционально
+        $Bill->addChild('curr', $billNewRq->currency);
         $Bill->addChild('statusEnum', 'NotSet');
         // Список товаров/услуг
-        if (isset($data['products']) && !empty($data['products'])) {
+        if (isset($billNewRq->products) && !empty($billNewRq->products)) {
             $products = $Bill->addChild('products');
-            foreach ($data['products'] as $pr) {
+            foreach ($billNewRq->products as $pr) {
                 $ProductInfo = $products->addChild('ProductInfo');
                 if (isset($pr['invItemId'])) {
                     $ProductInfo->addChild('invItemId', trim($pr['invItemId'])); // опционально
@@ -217,24 +215,84 @@ class HootkiGrosh
         return false;
     }
 
-    public function apiAlfaClick($data)
+    /**
+     * Добавляет новый счет в систему БелГазПромБанк
+     *
+     * @param array $data
+     *
+     * @return bool|string
+     */
+    public function apiBgpbPay($data)
+    {
+        // формируем xml
+        $Bill = new \SimpleXMLElement("<BgpbPayParam></BgpbPayParam>");
+        $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
+        $Bill->addChild('billId', $data['billId']);
+//        $products = $Bill->addChild('orderData');
+//        $products->addChild('eripId',$data['eripId']);
+//        $products->addChild('spClaimId',$data['spClaimId']);
+//        $products->addChild('amount', $data['amount']);
+//        $products->addChild('currency', '933');
+//        $products->addChild('clientFio', $data['clientFio']);
+//        $products->addChild('clientAddress', $data['clientAddress']);
+//        $products->addChild('trxId');
+        $Bill->addChild('returnUrl', htmlspecialchars($data['returnUrl']));
+        $Bill->addChild('cancelReturnUrl', htmlspecialchars($data['cancelReturnUrl']));
+        $Bill->addChild('submitValue', 'Оплатить картой на i24.by(БГПБ)');
+
+        $xml = $Bill->asXML();
+        // запрос
+        $this->requestPost('Pay/BgpbPay', $xml);
+        $responseXML = simplexml_load_string($this->response);
+        return $responseXML->form->__toString();
+    }
+
+
+    /**
+     * Добавляет новый счет в систему AllfaClick
+     *
+     * @param array $data
+     *
+     * @return bool|string
+     */
+    public function apiAlfaClick(AlfaclickRq $alfaclickRq)
     {
         // формируем xml
         $Bill = new \SimpleXMLElement("<AlfaClickParam></AlfaClickParam>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
-        $Bill->addChild('billid',$data['billid']);
-        $Bill->addChild('phone',$data['phone']);
-//        $xml = $Bill->asXML();
-        $xml = "<AlfaClickParam xmlns='http://www.hutkigrosh.by/API/PaymentSystems'>".
-  "<billId>4364356436463465</billId>".
-  "<phone>375256548523</phone>".
-    "</AlfaClickParam>";
+        $Bill->addChild('billId', $alfaclickRq->billId);
+        $Bill->addChild('phone', $alfaclickRq->phone);
+        $xml = $Bill->asXML();
         // запрос
         $res = $this->requestPost('Pay/AlfaClick', $xml);
-        $responseXML = simplexml_load_string($this->response);
-
-        return $this->response;
+        $responseXML = simplexml_load_string($this->response); // 0 – если произошла ошибка, billId – если удалось выставить счет в AlfaClick
+        return $responseXML;
     }
+
+    /**
+     * Получение формы виджета для оплаты картой
+     *
+     * @param array $data
+     *
+     * @return bool|string
+     */
+
+    public function apiWebPay(WebPayRq $webPayRq)
+    {
+        // формируем xml
+        $Bill = new \SimpleXMLElement("<WebPayParam></WebPayParam>");
+        $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
+        $Bill->addChild('billId', $webPayRq->billId);
+        $Bill->addChild('returnUrl', htmlspecialchars($webPayRq->returnUrl));
+        $Bill->addChild('cancelReturnUrl', htmlspecialchars($webPayRq->cancelReturnUrl));
+        $Bill->addChild('submitValue', "Pay with card");
+        $xml = $Bill->asXML();
+        // запрос
+        $res = $this->requestPost('Pay/WebPay', $xml);
+        $responseXML = simplexml_load_string($this->response, null, LIBXML_NOCDATA);
+        return $responseXML->form->__toString();
+    }
+
 
     /**
      * Извлекает информацию о выставленном счете
@@ -343,7 +401,7 @@ class HootkiGrosh
      */
     public function getError()
     {
-        return $this->error;
+        return 'Счет не выставлен! Произошла ошибка: ' . $this->error . '. <br> Повторите заказ.';
     }
 
     /**
@@ -495,4 +553,35 @@ class HootkiGrosh
     {
         return (isset($this->status_error[$status])) ? $this->status_error[$status] : 'Неизвестная ошибка';
     }
+
+    public function getStatusResponce()
+    {
+        return $this->status;
+    }
+}
+
+class BillNewRq
+{
+    public $eripId;
+    public $invId;
+    public $fullName;
+    public $mobilePhone;
+    public $email;
+    public $fullAddress;
+    public $amount;
+    public $currency;
+    public $products;
+}
+
+class WebPayRq
+{
+    public $billId;
+    public $returnUrl;
+    public $cancelReturnUrl;
+}
+
+class AlfaclickRq
+{
+    public $billId;
+    public $phone;
 }

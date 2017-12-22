@@ -1,6 +1,7 @@
 ## Модуль интеграции с CMS OpenCart  1.5.x
 
 Данный модуль обеспечивает взаимодействие между интернет-магазином на базе CMS Opencart версии 1.5.x и сервисом платежей hutkigrosh.by
+  * Модуль интеграции для версии [OpenCart 2.1.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/2.1)
   * Модуль интеграции для версии [OpenCart 2.2.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/2.2)
   * Модуль интеграции для версии [OpenCart 2.3.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/2.3)
   * Модуль интеграции для версии [OpenCart 3.0.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/3.0)

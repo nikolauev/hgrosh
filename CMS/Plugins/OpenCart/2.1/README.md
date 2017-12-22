@@ -1,14 +1,14 @@
-## Модуль интеграции с CMS OpenCart  3.0.0
+## Модуль интеграции с CMS OpenCart  2.1.x
 
-Данный модуль обеспечивает взаимодействие между интернет-магазином на базе CMS Opencart версии 3.0.x и сервисом платежей [ХуткiГрош](hutkigrosh.by)
+Данный модуль обеспечивает взаимодействие между интернет-магазином на базе CMS Opencart версии 2.2.x и сервисом платежей hutkigrosh.by
   * Модуль интеграции для версии [OpenCart 1.5.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/1.5.5%20(http))
-  * Модуль интеграции для версии [OpenCart 2.1.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/2.1)
   * Модуль интеграции для версии [OpenCart 2.2.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/2.2)
   * Модуль интеграции для версии [OpenCart 2.3.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/2.3)
+  * Модуль интеграции для версии [OpenCart 3.0.x](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart/3.0)
 
 ### Инструкция по установке:
 1. Создайте резервную копию вашего магазина и базы данных
-2. Установите модуль [opencart30-hutkigrosh-payment-module.ocmod.zip](https://github.com/esasby/hgrosh/blob/master/CMS/Plugins/OpenCart/3.0/opencart30-hutkigrosh-payment-module.ocmod.zip) с помощью _Модули_ -> _Установка расширений_
+2. Установите модуль [opencart21-hutkigrosh-payment-module.ocmod.zip](https://github.com/esasby/hgrosh/blob/master/CMS/Plugins/OpenCart/2.1/opencart21-hutkigrosh-payment-module.ocmod.zip) с помощью _Модули_ -> _Установка расширений_
 3. Напротив модуля ХуткiГрош нажмите «Установить», а затем «Изменить».
 4. Заполните параметры для идентификации вашего магазина в системе ХуткiГрош
     * Уникальный идентификатор услуги ЕРИП – ID ЕРИП услуги
@@ -21,15 +21,15 @@
 ### Внимание!
 Для автоматического обновления статуса заказа (после оплаты клиентом выставленного в ЕРИП счета) необходимо сообщить в службу технической поддержки сервиса «Хуткi Грош» адрес обработчика:
 ```
-http://mydomen.my/index.php?route=extension/payment/hutkigrosh/notify
+http://mydomen.my/index.php?route=payment/hutkigrosh/notify
 ```
 
 ### Тестовые данные
-Для настрой оплаты в тестовом режиме:
+Для настрой оплаты в тестовом режиме
  * воспользуйтесь данными для подключения к тестовой системе, полученными при регистрации в ХуткiГрош
- * включите в настройках модуля режим "Песочницы" 
- * для эмуляции оплаты клиентом выставленного счета воспльзуйтесь личным кабинетом [тестовой системы](https://trial.hgrosh.by) (меню _Тест оплаты ЕРИП_)
+ * включите в настройках модуля режим "Песочницы"
+ * для эмуляции оплаты клиентом выставленного счета воспльзуйтесь личным кабинетом [тестовой системы](https://trial.hgrosh.by) (меню _Тест оплаты ЕРИП_) 
 
-_Разработано и протестировано с OpenCart v.3.0.0.2_
+_Разработано и протестировано с OpenCart v.2.1.0.2_
 
 
