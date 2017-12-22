@@ -8,15 +8,9 @@
 
 Плагины позволяют в автоматическом режиме выставлять покупателям сайта счета на оплату товаров с помощью системы расчетов ЕРИП (www.raschet.by)
 
-На данный момент доступна beta-версия плагина для CMS-систем:
-
-1. Joomla версии 3.4.4 с модулем корзины JoomShopping 4.4.5.
-
-2. OpenCart версии 1.5.5.
-
-3. Bitrix.
-
-4. WordPress.
+На данный момент доступна beta-версии для CMS-систем:
+1. [OpenCart](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart) (v.1.5.x, v.2.1.x, v.2.2.x, v.2.3.x, v.3.0.x)   
+2. [WordPress](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/WordPress) c модулем WooCommerce (v3.2)
 
 
 

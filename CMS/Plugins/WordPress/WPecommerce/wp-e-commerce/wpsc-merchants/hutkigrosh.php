@@ -8,7 +8,7 @@ $nzshpcrt_gateways[$num]['submit_function'] = "submit_hutkigrosh";
 $nzshpcrt_gateways[$num]['payment_type'] = "ERIP";
 $nzshpcrt_gateways[$num]['display_name'] = 'ERIP';
 
-include_once  'class_hutkigrosh.php';
+include_once 'class_hutkigrosh.php';
 
 
 function form_hutkigrosh()
