@@ -1,6 +1,6 @@
 <?php
 
-namespace Alexantr\HootkiGrosh;
+namespace Esas\HootkiGrosh;
 
 /**
  * HootkiGrosh class
@@ -17,7 +17,9 @@ class HootkiGrosh
     private $error; // ошибка запроса (если есть)
     private $response; // тело ответа
     private $status; // код статуса
+    private $loggedin = false; // выполнен ли вход
 
+    private $config;
     public $cookies_dir;
 
     // api url
@@ -62,14 +64,14 @@ class HootkiGrosh
     /**
      * @param bool $is_test Использовать ли тестовый api
      */
-    public function __construct($is_test = false)
+    public function __construct(HGConfig $config)
     {
-        if ($is_test) {
+        $this->config = $config;
+        if ($config->sandbox) {
             $this->base_url = $this->test_api_url;
         } else {
             $this->base_url = $this->api_url;
         }
-
         if (!isset(self::$cookies_file)) {
             self::$cookies_file = 'cookies-' . time() . '.txt';
         }
@@ -95,18 +97,15 @@ class HootkiGrosh
     /**
      * Аутентифицирует пользователя в системе
      *
-     * @param string $user
-     * @param string $pwd
-     *
      * @return bool
      */
-    public function apiLogIn($user, $pwd)
+    public function apiLogIn()
     {
         // формируем xml
         $Credentials = new \SimpleXMLElement("<Credentials></Credentials>");
         $Credentials->addAttribute('xmlns', 'http://www.hutkigrosh.by/api');
-        $Credentials->addChild('user', trim($user));
-        $Credentials->addChild('pwd', trim($pwd));
+        $Credentials->addChild('user', trim($this->config->login));
+        $Credentials->addChild('pwd', trim($this->config->password));
 
         $xml = $Credentials->asXML();
 
@@ -118,7 +117,7 @@ class HootkiGrosh
             $this->error = 'Ошибка авторизации';
             return false;
         }
-
+        $this->loggedin = true;
         return $res;
     }
 
@@ -134,6 +133,7 @@ class HootkiGrosh
         if (is_file($cookies_path)) {
             @unlink($cookies_path);
         }
+        $this->loggedin = false;
         return $res;
     }
 
@@ -144,40 +144,40 @@ class HootkiGrosh
      *
      * @return bool|string
      */
-    public function apiBillNew($data)
+    public function apiBillNew(BillNewRq $billNewRq)
     {
-        // выберем валюту
-        $curr = isset($data['curr']) ? trim($data['curr']) : 'BYN';
-        if (!in_array($curr, $this->currencies)) {
-            $curr = $this->currencies[0];
+        if (!$this->loggedin){
+            $this->apiLogIn();
         }
-
+        // выберем валюту
+        $billNewRq->currency = isset($billNewRq->currency) ? trim($billNewRq->currency) : 'BYN';
+        if (!in_array($billNewRq->currency, $this->currencies)) {
+            $billNewRq->currency = $this->currencies[0];
+        }
         // формируем xml
         $Bill = new \SimpleXMLElement("<Bill></Bill>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/api/invoicing');
-        $Bill->addChild('eripId', trim($data['eripId']));
-        $Bill->addChild('invId', trim($data['invId']));
+        $Bill->addChild('eripId', trim($billNewRq->eripId));
+        $Bill->addChild('invId', trim($billNewRq->invId));
         $Bill->addChild('dueDt', date('c', strtotime('+1 day'))); // +1 день
         $Bill->addChild('addedDt', date('c'));
-        $Bill->addChild('fullName', trim($data['fullName']));
-        $Bill->addChild('mobilePhone', trim($data['mobilePhone']));
+        $Bill->addChild('fullName', trim($billNewRq->fullName));
+        $Bill->addChild('mobilePhone', trim($billNewRq->mobilePhone));
         $Bill->addChild('notifyByMobilePhone', 'false');
-        if (isset($data['email'])) {
-            $Bill->addChild('email', trim($data['email'])); // опционально
+        if (isset($billNewRq->email)) {
+            $Bill->addChild('email', trim($billNewRq->email)); // опционально
         }
         $Bill->addChild('notifyByEMail', 'false');
-        if (isset($data['fullAddress'])) {
-            $Bill->addChild('fullAddress', trim($data['fullAddress'])); // опционально
+        if (isset($billNewRq->fullAddress)) {
+            $Bill->addChild('fullAddress', trim($billNewRq->fullAddress)); // опционально
         }
-        if (isset($data['amt'])) {
-            $Bill->addChild('amt', (float)$data['amt']); // опционально
-        }
-        $Bill->addChild('curr', $curr);
+        $Bill->addChild('amt', (float)$billNewRq->amount); // опционально
+        $Bill->addChild('curr', $billNewRq->currency);
         $Bill->addChild('statusEnum', 'NotSet');
         // Список товаров/услуг
-        if (isset($data['products']) && !empty($data['products'])) {
+        if (isset($billNewRq->products) && !empty($billNewRq->products)) {
             $products = $Bill->addChild('products');
-            foreach ($data['products'] as $pr) {
+            foreach ($billNewRq->products as $pr) {
                 $ProductInfo = $products->addChild('ProductInfo');
                 if (isset($pr['invItemId'])) {
                     $ProductInfo->addChild('invItemId', trim($pr['invItemId'])); // опционально
@@ -226,26 +226,29 @@ class HootkiGrosh
      */
     public function apiBgpbPay($data)
     {
+        if (!$this->loggedin){
+            $this->apiLogIn();
+        }
         // формируем xml
         $Bill = new \SimpleXMLElement("<BgpbPayParam></BgpbPayParam>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
-        $Bill->addChild('billId',$data['billId']);
-        $products = $Bill->addChild('orderData');
-        $products->addChild('paymentId',$data['paymentId']);
-        $products->addChild('spClaimId',$data['spClaimId']);
-        $products->addChild('amount', $data['amount']);
-        $products->addChild('currency', '974');
-        $products->addChild('clientFio', $data['clientFio']);
-        $products->addChild('clientAddress', $data['clientAddress']);
-        $products->addChild('trxId');
+        $Bill->addChild('billId', $data['billId']);
+//        $products = $Bill->addChild('orderData');
+//        $products->addChild('eripId',$data['eripId']);
+//        $products->addChild('spClaimId',$data['spClaimId']);
+//        $products->addChild('amount', $data['amount']);
+//        $products->addChild('currency', '933');
+//        $products->addChild('clientFio', $data['clientFio']);
+//        $products->addChild('clientAddress', $data['clientAddress']);
+//        $products->addChild('trxId');
         $Bill->addChild('returnUrl', htmlspecialchars($data['returnUrl']));
         $Bill->addChild('cancelReturnUrl', htmlspecialchars($data['cancelReturnUrl']));
+        $Bill->addChild('submitValue', 'Оплатить картой на i24.by(БГПБ)');
 
         $xml = $Bill->asXML();
         // запрос
-        $res = $this->requestPost('Pay/BgpbPay', $xml);
+        $this->requestPost('Pay/BgpbPay', $xml);
         $responseXML = simplexml_load_string($this->response);
-
         return $responseXML->form->__toString();
     }
 
@@ -257,20 +260,51 @@ class HootkiGrosh
      *
      * @return bool|string
      */
-    public function apiAlfaClick($data)
+    public function apiAlfaClick(AlfaclickRq $alfaclickRq)
     {
+        if (!$this->loggedin){
+            $this->apiLogIn();
+
+        }
         // формируем xml
         $Bill = new \SimpleXMLElement("<AlfaClickParam></AlfaClickParam>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
-        $Bill->addChild('billId',$data['billId']);
-        $Bill->addChild('phone',$data['phone']);
+        $Bill->addChild('billId', $alfaclickRq->billId);
+        $Bill->addChild('phone', $alfaclickRq->phone);
         $xml = $Bill->asXML();
         // запрос
         $res = $this->requestPost('Pay/AlfaClick', $xml);
-        $responseXML = simplexml_load_string($this->response);
+        $responseXML = simplexml_load_string($this->response); // 0 – если произошла ошибка, billId – если удалось выставить счет в AlfaClick
+        return $responseXML;
+    }
 
+    /**
+     * Получение формы виджета для оплаты картой
+     *
+     * @param array $data
+     *
+     * @return bool|string
+     */
+
+    public function apiWebPay(WebPayRq $webPayRq)
+    {
+        if (!$this->loggedin){
+            $this->apiLogIn();
+        }
+        // формируем xml
+        $Bill = new \SimpleXMLElement("<WebPayParam></WebPayParam>");
+        $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
+        $Bill->addChild('billId', $webPayRq->billId);
+        $Bill->addChild('returnUrl', htmlspecialchars($webPayRq->returnUrl));
+        $Bill->addChild('cancelReturnUrl', htmlspecialchars($webPayRq->cancelReturnUrl));
+        $Bill->addChild('submitValue', "Pay with card");
+        $xml = $Bill->asXML();
+        // запрос
+        $res = $this->requestPost('Pay/WebPay', $xml);
+        $responseXML = simplexml_load_string($this->response, null, LIBXML_NOCDATA);
         return $responseXML->form->__toString();
     }
+
 
     /**
      * Извлекает информацию о выставленном счете
@@ -281,9 +315,11 @@ class HootkiGrosh
      */
     public function apiBillInfo($bill_id)
     {
+        if (!$this->loggedin){
+            $this->apiLogIn();
+        }
         // запрос
         $res = $this->requestGet('Invoicing/Bill(' . $bill_id . ')');
-
         if ($res) {
             $array = $this->responseToArray();
 
@@ -315,8 +351,10 @@ class HootkiGrosh
      */
     public function apiBillDelete($bill_id)
     {
+        if (!$this->loggedin){
+            $this->apiLogIn();
+        }
         $res = $this->requestDelete('Invoicing/Bill(' . $bill_id . ')');
-
         if ($res) {
             $array = $this->responseToArray();
 
@@ -348,8 +386,10 @@ class HootkiGrosh
      */
     public function apiBillStatus($bill_id)
     {
+        if (!$this->loggedin){
+            $this->apiLogIn();
+        }
         $res = $this->requestGet('Invoicing/BillStatus(' . $bill_id . ')');
-
         if ($res) {
             $array = $this->responseToArray();
 
@@ -379,7 +419,7 @@ class HootkiGrosh
      */
     public function getError()
     {
-        return $this->error;
+        return 'Счет не выставлен! Произошла ошибка: ' . $this->error . '. <br> Повторите заказ.';
     }
 
     /**
@@ -531,4 +571,56 @@ class HootkiGrosh
     {
         return (isset($this->status_error[$status])) ? $this->status_error[$status] : 'Неизвестная ошибка';
     }
+
+    public function getStatusResponce()
+    {
+        return $this->status;
+    }
+}
+
+class BillNewRq
+{
+    public $eripId;
+    public $invId;
+    public $fullName;
+    public $mobilePhone;
+    public $email;
+    public $fullAddress;
+    public $amount;
+    public $currency;
+    public $products;
+}
+
+class BillInfoRs
+{
+    public $eripId;
+    public $invId;
+    public $fullName;
+    public $mobilePhone;
+    public $email;
+    public $fullAddress;
+    public $amount;
+    public $currency;
+    public $products;
+}
+
+class WebPayRq
+{
+    public $billId;
+    public $returnUrl;
+    public $cancelReturnUrl;
+}
+
+class AlfaclickRq
+{
+    public $billId;
+    public $phone;
+}
+
+class HGConfig
+{
+    public $login;
+    public $password;
+    public $sandbox;
+
 }
