@@ -34,6 +34,8 @@ class ControllerPaymentHutkiGrosh extends Controller {
         $this->data['text_order_status_payed'] = $this->language->get('text_order_status_payed');
         $this->data['text_order_status_error'] = $this->language->get('text_order_status_error');
         $this->data['text_erip_tree_path'] = $this->language->get('text_erip_tree_path');
+        $this->data['text_email_notification'] = $this->language->get('text_email_notification');
+        $this->data['text_sms_notification'] = $this->language->get('text_sms_notification');
 
         // Предупреждение об ошибках
         if (isset($this->error['warning'])) {
@@ -153,6 +155,18 @@ class ControllerPaymentHutkiGrosh extends Controller {
             $this->data['hutkigrosh_erip_tree_path'] = $this->request->post['hutkigrosh_erip_tree_path'];
         } else {
             $this->data['hutkigrosh_erip_tree_path'] = $this->config->get('hutkigrosh_erip_tree_path');
+        }
+
+        if (isset($this->request->post['hutkigrosh_email_notification'])) {
+            $this->data['hutkigrosh_email_notification'] = $this->request->post['hutkigrosh_email_notification'];
+        } else {
+            $this->data['hutkigrosh_email_notification'] = $this->config->get('hutkigrosh_email_notification');
+        }
+
+        if (isset($this->request->post['hutkigrosh_sms_notification'])) {
+            $this->data['hutkigrosh_sms_notification'] = $this->request->post['hutkigrosh_sms_notification'];
+        } else {
+            $this->data['hutkigrosh_sms_notification'] = $this->config->get('hutkigrosh_sms_notification');
         }
 
         // Кнопки

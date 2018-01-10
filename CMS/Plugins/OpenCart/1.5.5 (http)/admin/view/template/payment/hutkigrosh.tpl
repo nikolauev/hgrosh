@@ -76,6 +76,20 @@
         </td>
     </tr>
     <tr>
+        <td><?php echo $text_email_notification; ?></td>
+        <td>
+            <input type="checkbox" name="hutkigrosh_email_notification" value="1"
+            <?php if ($hutkigrosh_email_notification) { ?>checked="checked"<?php } ?> />
+        </td>
+    </tr>
+    <tr>
+        <td><?php echo $text_sms_notification; ?></td>
+        <td>
+            <input type="checkbox" name="hutkigrosh_sms_notification" value="1"
+            <?php if ($hutkigrosh_sms_notification) { ?>checked="checked"<?php } ?> />
+        </td>
+    </tr>
+    <tr>
         <td><?php echo $text_test; ?></td>
         <td><?php if ($hutkigrosh_test) { ?>
             <input type="checkbox" name="hutkigrosh_test" value="1" checked="checked" />

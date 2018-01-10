@@ -19,6 +19,8 @@ $_['text_save'] = 'Save';
 $_['text_cancel'] = 'Cancel';
 $_['text_sort_order'] = 'Sort order:';
 $_['text_erip_tree_path'] = 'ERIP tree path';
+$_['text_email_notification'] = 'Email notification';
+$_['text_sms_notification'] = 'Sms notification';
 
 $_['text_order_status_pending'] = 'Pending payment status id';
 $_['text_order_status_payed'] = 'Payed status id';

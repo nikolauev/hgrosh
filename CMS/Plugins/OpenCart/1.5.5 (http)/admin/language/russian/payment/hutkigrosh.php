@@ -19,6 +19,8 @@ $_['text_save'] = 'Сохранить';
 $_['text_cancel'] = 'Отмена';
 $_['text_sort_order'] = 'Порядок сортировки';
 $_['text_erip_tree_path'] = 'Путь в дереве ЕРИП';
+$_['text_email_notification'] = 'Оповещение клиента по email';
+$_['text_sms_notification'] = 'Оповещение клиента по sms';
 
 $_['text_order_status_pending'] = 'Идентикатор статуса ожидания оплаты';
 $_['text_order_status_payed'] = 'Идентикатор статуса успешнй оплаты';
