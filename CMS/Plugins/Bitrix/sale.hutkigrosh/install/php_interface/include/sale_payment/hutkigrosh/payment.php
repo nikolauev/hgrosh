@@ -13,7 +13,7 @@ include 'hutkigrosh_api.php';
 $config = new HGConfig();
 $config->login = trim(htmlspecialchars(CSalePaySystemAction::GetParamValue("LOGIN")));
 $config->password = trim(htmlspecialchars(CSalePaySystemAction::GetParamValue("PWD")));
-$config->sandbox = trim(htmlspecialchars(CSalePaySystemAction::GetParamValue("MODE")));
+$config->sandbox = trim(htmlspecialchars(CSalePaySystemAction::GetParamValue("SANDBOX")));
 
 $hg = new HootkiGrosh($config);
 $order = Order::load($GLOBALS["SALE_INPUT_PARAMS"]["ORDER"]["ID"]);
@@ -33,7 +33,7 @@ $hg->apiLogOut();
 ?>
 <div class="sale-paysystem-wrapper">
 	<span class="tablebodytext">
-		<?= Loc::getMessage('hutkigrosh_success_text', array("#ORDER_ID#" => $order->getId(), "#PATH_TO_SERVICE#" => "")); ?>
+		<?= Loc::getMessage('hutkigrosh_success_text', array("#ORDER_ID#" => $order->getId(), "#ERIP_TREE_PATH#" => trim(htmlspecialchars(CSalePaySystemAction::GetParamValue("ERIP_TREE_PATH"))))); ?>
 	</span>
     <?php if ($_REQUEST['webpay_status'] == 'payed') { ?>
         <div class="alert alert-info"
@@ -63,16 +63,15 @@ $hg->apiLogOut();
                 {
                     phone: phone,
                     billid: '<?=$billID;?>',
-                    orderid: '<?=$order->getId();?>'
                 }
-            ).done(function (data) {
-                console.log(data);
-                if (Number(data) == '0') {
-                    $('#hutkigroshmessage').remove();
-                    $('.webpayform').before('<div class="alert alert-danger" id="hutkigroshmessage">Не удалось выставить счет в системе AlfaClick</div>');
-                } else {
+            ).done(function (result) {
+                console.log(result);
+                if (result.trim() == 'ok') {
                     $('#hutkigroshmessage').remove();
                     $('.webpayform').before('<div class="alert alert-info" id="hutkigroshmessage">Выставлен счет в системе AlfaClick</div>');
+                } else {
+                    $('#hutkigroshmessage').remove();
+                    $('.webpayform').before('<div class="alert alert-danger" id="hutkigroshmessage">Не удалось выставить счет в системе AlfaClick</div>');
                 }
 
             });
@@ -109,6 +108,7 @@ function addBill(HootkiGrosh $hg, Order $order)
             "DELAY",
             "CAN_BUY",
             "PRICE",
+            "CURRENCY",
             "WEIGHT")
     );
 
@@ -133,6 +133,9 @@ function addBill(HootkiGrosh $hg, Order $order)
             $arItem['desc'] = $line_item['NAME'];
             $arItem['count'] = round($line_item['QUANTITY']);
             $arItem['amt'] = $line_item['QUANTITY'] * $line_item['PRICE'];
+            $orderCurrency = isset($orderCurrency) ? $orderCurrency : $arItem['CURRENCY'];
+            if ($orderCurrency != $arItem['CURRENCY'])
+                throw new Exception('Multicurrency orders are not allowd'); //TODO со временем можно сделать выставление разных счетов
             $totalSummOrder += $arItem['amt'];
             $arItems[] = $arItem;
             unset($arItem);
@@ -147,7 +150,9 @@ function addBill(HootkiGrosh $hg, Order $order)
     $billNewRq->email = $GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['EMAIL'];
     $billNewRq->fullAddress = $GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['CITY'] . ' ' . $GLOBALS["SALE_INPUT_PARAMS"]['PROPERTY']['ADDRESS'];
     $billNewRq->amount = $totalSummOrder;
-    //$billNewRq->currency = $GLOBALS["SALE_INPUT_PARAMS"]["ORDER"]["CURRENCY"];; //TODO точно работает?
+    $billNewRq->notifyByEMail = (trim(htmlspecialchars(CSalePaySystemAction::GetParamValue("NOTIFY_BY_EMAIL"))) == 1 ? true : false);
+    $billNewRq->notifyByMobilePhone = (trim(htmlspecialchars(CSalePaySystemAction::GetParamValue("NOTIFY_BY_PHONE"))) == 1 ? true : false);
+    $billNewRq->currency = $orderCurrency;
     $billNewRq->products = $arItems;
 
 

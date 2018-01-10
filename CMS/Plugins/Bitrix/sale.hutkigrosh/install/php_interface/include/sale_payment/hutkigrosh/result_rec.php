@@ -15,7 +15,7 @@ if (!isset($purchaseid)) {
 $config = new HGConfig();
 $config->password = CSalePaySystemAction::GetParamValue("PWD");
 $config->login = CSalePaySystemAction::GetParamValue("LOGIN");
-$config->sandbox = CSalePaySystemAction::GetParamValue("MODE");
+$config->sandbox = CSalePaySystemAction::GetParamValue("SANDBOX");
 
 
 #дополнительно проверим статус счета в hg

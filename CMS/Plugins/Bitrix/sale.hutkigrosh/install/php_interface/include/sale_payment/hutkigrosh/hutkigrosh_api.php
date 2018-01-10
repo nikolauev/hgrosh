@@ -163,11 +163,11 @@ class HootkiGrosh
         $Bill->addChild('addedDt', date('c'));
         $Bill->addChild('fullName', trim($billNewRq->fullName));
         $Bill->addChild('mobilePhone', trim($billNewRq->mobilePhone));
-        $Bill->addChild('notifyByMobilePhone', 'false');
+        $Bill->addChild('notifyByMobilePhone', $billNewRq->notifyByMobilePhone ? "true" : "false");
         if (isset($billNewRq->email)) {
             $Bill->addChild('email', trim($billNewRq->email)); // опционально
+            $Bill->addChild('notifyByEMail', $billNewRq->notifyByEMail ? "true" : "false");
         }
-        $Bill->addChild('notifyByEMail', 'false');
         if (isset($billNewRq->fullAddress)) {
             $Bill->addChild('fullAddress', trim($billNewRq->fullAddress)); // опционально
         }
@@ -589,6 +589,8 @@ class BillNewRq
     public $amount;
     public $currency;
     public $products;
+    public $notifyByEMail = false;
+    public $notifyByMobilePhone = false;
 }
 
 class BillInfoRs

@@ -26,34 +26,28 @@ $arPSCorrespondence = array(
         "VALUE" => "",
         "TYPE" => ""
     ),
-    "MODE" => array(
-        "NAME" => GetMessage("HG_MODE"),
-        "DESCR" => GetMessage("HG_MODE_DESC"),
+    "SANDBOX" => array(
+        "NAME" => GetMessage("HG_SANDBOX"),
+        "DESCR" => GetMessage("HG_SANDBOX_DESC"),
         "VALUE" => "1",
         "TYPE" => ""
     ),
-    "HG_RETURN_URL" => array(
-        "NAME" => GetMessage("hg_return_url_N"),
-        "DESCR" => GetMessage("hg_return_url_D"),
-        "VALUE" => "/payinfo/ok.php",
+    "ERIP_TREE_PATH" => array(
+        "NAME" => GetMessage("ERIP_TREE_PATH"),
+        "DESCR" => GetMessage("ERIP_TREE_PATH_DESC"),
+        "VALUE" => "",
         "TYPE" => ""
     ),
-    "HG_CANCEL_RETURN_URL" => array(
-        "NAME" => GetMessage("hg_cancel_return_url_N"),
-        "DESCR" => GetMessage("hg_cancel_return_url_D"),
-        "VALUE" => "/payinfo/error.php",
+    "NOTIFY_BY_PHONE" => array(
+        "NAME" => GetMessage("HG_NOTIFY_BY_PHONE"),
+        "DESCR" => GetMessage("HG_NOTIFY_BY_PHONE_DESC"),
+        "VALUE" => "",
         "TYPE" => ""
     ),
-    "HG_NOTIFY_URL" => array(
-        "NAME" => GetMessage("hg_notify_url_N"),
-        "DESCR" => GetMessage("hg_notify_url_D"),
-        "VALUE" => "/payinfo/ok.php",
+    "NOTIFY_BY_EMAIL" => array(
+        "NAME" => GetMessage("HG_NOTIFY_BY_EMAIL"),
+        "DESCR" => GetMessage("HG_NOTIFY_BY_EMAIL_DESC"),
+        "VALUE" => "",
         "TYPE" => ""
-    ),
-    "ORDER_ID" => array(
-        "NAME" => GetMessage("ORDER_ID"),
-        "DESCR" => GetMessage("ORDER_ID_DESCR"),
-        "VALUE" => "ID",
-        "TYPE" => "ORDER"
-    ),
+    )
 );
