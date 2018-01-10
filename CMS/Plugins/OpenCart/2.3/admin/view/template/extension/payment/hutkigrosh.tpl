@@ -159,6 +159,36 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-hutkigrosh_email_notification">
+                        <span data-toggle="tooltip" title="<?php echo $text_email_notification_help; ?>"
+                              data-original-title="">
+                            <?php echo $text_email_notification; ?>
+                        </span>
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" id="input-hutkigrosh_email_notification"
+                                   name="hutkigrosh_email_notification" value="1"
+                            <?php if ($hutkigrosh_email_notification) { ?>checked="checked"<?php } ?>
+                            class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-hutkigrosh_sms_notification">
+                        <span data-toggle="tooltip" title="<?php echo $text_sms_notification_help; ?>"
+                              data-original-title="">
+                            <?php echo $text_sms_notification; ?>
+                        </span>
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" id="input-hutkigrosh_sms_notification"
+                                   name="hutkigrosh_sms_notification" value="1"
+                            <?php if ($hutkigrosh_sms_notification) { ?>checked="checked"<?php } ?>
+                            class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-hutkigrosh_test">
                         <span data-toggle="tooltip" title="" data-original-title="">
                             <?php echo $text_test; ?>
