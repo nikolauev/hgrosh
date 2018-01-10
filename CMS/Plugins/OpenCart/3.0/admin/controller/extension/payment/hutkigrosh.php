@@ -13,6 +13,8 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
     const HUTKIGROSH_ORDER_STATUS_PAYED = 'payment_hutkigrosh_order_status_payed';
     const HUTKIGROSH_ORDER_STATUS_ERROR = 'payment_hutkigrosh_order_status_error';
     const HUTKIGROSH_ERIP_TREE_PATH = 'payment_hutkigrosh_erip_tree_path';
+    const HUTKIGROSH_SMS_NOTIFICATION = 'payment_hutkigrosh_sms_notification';
+    const HUTKIGROSH_EMAIL_NOTIFICATION = 'payment_hutkigrosh_email_notification';
 
 
     private $errors = array();
@@ -49,6 +51,8 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
         $data['configFields'][] = $this->createConfigurationField(self::HUTKIGROSH_ORDER_STATUS_ERROR, false);
         $data['configFields'][] = $this->createConfigurationField(self::HUTKIGROSH_MODULE_SORT_ORDER, false);
         $data['configFields'][] = $this->createConfigurationField(self::HUTKIGROSH_SANDBOX, false);
+        $data['configFields'][] = $this->createConfigurationField(self::HUTKIGROSH_SMS_NOTIFICATION, false);
+        $data['configFields'][] = $this->createConfigurationField(self::HUTKIGROSH_EMAIL_NOTIFICATION, false);
         $data['configFields'][] = $this->createConfigurationField(self::HUTKIGROSH_MODULE_STATUS, false);
 
 

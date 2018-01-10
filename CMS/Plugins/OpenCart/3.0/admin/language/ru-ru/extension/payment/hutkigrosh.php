@@ -32,6 +32,12 @@ $_['payment_hutkigrosh_erip_tree_path_description'] = 'Путь в дереве 
 $_['payment_hutkigrosh_sandbox_label'] = 'Режим песочницы:';
 $_['payment_hutkigrosh_sandbox_description'] = 'Используется для тестирования модуля. При оформлении заказа взаимодействие выполняется с тестовой системой ХуткiГрош';
 
+$_['payment_hutkigrosh_email_notification_label'] = 'Email оповещение:';
+$_['payment_hutkigrosh_email_notification_description'] = 'Включить email-оповещение клиента при успешном выставлении счета';
+
+$_['payment_hutkigrosh_sms_notification_label'] = 'Sms оповещение:';
+$_['payment_hutkigrosh_sms_notification_description'] = 'Включить sms-оповещение клиента при успешном выставлении счета';
+
 $_['payment_hutkigrosh_status_label'] = 'Статус:';
 $_['payment_hutkigrosh_status_description'] = 'Статус модуля';
 

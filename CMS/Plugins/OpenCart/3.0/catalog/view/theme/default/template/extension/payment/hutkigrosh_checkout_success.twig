@@ -45,13 +45,13 @@
                         {
                             phone : $('#phone').val(),
                             billid : $('#billID').val()}
-                ).done(function(data){
-                        if (data == '0'){
-                            $('#message').remove();
-                            $('.buttons').before('<div class="alert alert-danger" id="message">Не удалось выставить счет в системе AlfaClick</div>');
-                        } else {
+                ).done(function(result){
+                        if (result.trim() == 'ok'){
                             $('#message').remove();
                             $('.buttons').before('<div class="alert alert-info" id="message">Выставлен счет в системе AlfaClick</div>');
+                        } else {
+                            $('#message').remove();
+                            $('.buttons').before('<div class="alert alert-danger" id="message">Не удалось выставить счет в системе AlfaClick</div>');
                         }
                     })
                 })

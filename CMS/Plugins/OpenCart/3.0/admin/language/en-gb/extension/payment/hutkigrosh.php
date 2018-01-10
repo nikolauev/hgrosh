@@ -33,6 +33,12 @@ $_['payment_hutkigrosh_erip_tree_path_description'] = 'ERIP tree path which will
 $_['payment_hutkigrosh_sandbox_label'] = 'Sandbox mode:';
 $_['payment_hutkigrosh_sandbox_description'] = 'Sandbox mode';
 
+$_['payment_hutkigrosh_email_notification_label'] = 'Email notification:';
+$_['payment_hutkigrosh_email_notification_description'] = 'Email notification';
+
+$_['payment_hutkigrosh_sms_notification_label'] = 'Sms notification:';
+$_['payment_hutkigrosh_sms_notification_description'] = 'Sms notification';
+
 $_['payment_hutkigrosh_status_label'] = 'Status:';
 $_['payment_hutkigrosh_status_description'] = 'Status';
 

@@ -16,6 +16,8 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
     const HUTKIGROSH_ORDER_STATUS_PAYED = 'payment_hutkigrosh_order_status_payed';
     const HUTKIGROSH_ORDER_STATUS_ERROR = 'payment_hutkigrosh_order_status_error';
     const HUTKIGROSH_ERIP_TREE_PATH = 'payment_hutkigrosh_erip_tree_path';
+    const HUTKIGROSH_EMAIL_NOTIFICATION = 'payment_hutkigrosh_email_notification';
+    const HUTKIGROSH_SMS_NOTIFICATION = 'payment_hutkigrosh_sms_notification';
     // Транслитерация строк.
 
     public function index()
@@ -81,6 +83,8 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
             $billNewRq->fullAddress = $localOrderInfo['payment_address_1'] . ' ' . $localOrderInfo['payment_address_2'] . ' ' . $localOrderInfo['payment_zone'];
             $billNewRq->amount = $localOrderInfo['total'];
             $billNewRq->currency = $localOrderInfo['currency_code'];
+            $billNewRq->notifyByEMail = $this->config->get(self::HUTKIGROSH_EMAIL_NOTIFICATION);
+            $billNewRq->notifyByMobilePhone = $this->config->get(self::HUTKIGROSH_SMS_NOTIFICATION);
             $billNewRq->products = $arItems;
 
 
@@ -121,7 +125,7 @@ class ControllerExtensionPaymentHutkiGrosh extends Controller
 
         $responceXML = $hg->apiAlfaClick($alfaclickRq);
         $hg->apiLogOut();
-        echo $responceXML->__toString();
+        echo intval($responceXML->__toString()) == '0' ? "error" : "ok";
     }
 
     protected function failure($error)

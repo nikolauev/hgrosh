@@ -147,9 +147,9 @@ class HootkiGrosh
     public function apiBillNew(BillNewRq $billNewRq)
     {
         // выберем валюту
-        $curr = isset($data['curr']) ? trim($data['curr']) : 'BYN';
-        if (!in_array($curr, $this->currencies)) {
-            $curr = $this->currencies[0];
+        $billNewRq->currency = isset($billNewRq->currency) ? trim($billNewRq->currency) : 'BYN';
+        if (!in_array($billNewRq->currency, $this->currencies)) {
+            $billNewRq->currency = $this->currencies[0];
         }
 
         // формируем xml
@@ -161,11 +161,11 @@ class HootkiGrosh
         $Bill->addChild('addedDt', date('c'));
         $Bill->addChild('fullName', trim($billNewRq->fullName));
         $Bill->addChild('mobilePhone', trim($billNewRq->mobilePhone));
-        $Bill->addChild('notifyByMobilePhone', 'false');
+        $Bill->addChild('notifyByMobilePhone', $billNewRq->notifyByMobilePhone ? "true" : "false");
         if (isset($billNewRq->email)) {
             $Bill->addChild('email', trim($billNewRq->email)); // опционально
+            $Bill->addChild('notifyByEMail', $billNewRq->notifyByEMail ? "true" : "false");
         }
-        $Bill->addChild('notifyByEMail', 'false');
         if (isset($billNewRq->fullAddress)) {
             $Bill->addChild('fullAddress', trim($billNewRq->fullAddress)); // опционально
         }
@@ -492,6 +492,7 @@ class HootkiGrosh
 
         curl_setopt($this->ch, CURLOPT_URL, $this->base_url . $path);
         curl_setopt($this->ch, CURLOPT_HEADER, false); // включение заголовков в выводе
+        curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($this->ch, CURLOPT_VERBOSE, true); // вывод доп. информации в STDERR
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false); // не проверять сертификат узла сети
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false); // проверка существования общего имени в сертификате SSL
@@ -571,6 +572,8 @@ class BillNewRq
     public $amount;
     public $currency;
     public $products;
+    public $notifyByEMail = false;
+    public $notifyByMobilePhone = false;
 }
 
 class BillInfoRs

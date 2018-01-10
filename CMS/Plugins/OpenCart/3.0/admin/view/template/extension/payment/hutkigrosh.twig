@@ -50,6 +50,14 @@
                                             {% endif %}
                                         {% endfor %}
                                     </select>
+                                {% elseif configField.key == 'payment_hutkigrosh_email_notification' %}
+                                    <input type="checkbox" id="input-{{ configField.key }}"
+                                           name="{{ configField.key }}" value="1"
+                                           {% if configField.value %}checked="checked"{% endif %} class="form-control"/>
+                                {% elseif configField.key == 'payment_hutkigrosh_sms_notification' %}
+                                    <input type="checkbox" id="input-{{ configField.key }}"
+                                           name="{{ configField.key }}" value="1"
+                                           {% if configField.value %}checked="checked"{% endif %} class="form-control"/>
                                 {% elseif configField.key == 'payment_hutkigrosh_sandbox' %}
                                     <input type="checkbox" id="input-{{ configField.key }}"
                                            name="{{ configField.key }}" value="1"
