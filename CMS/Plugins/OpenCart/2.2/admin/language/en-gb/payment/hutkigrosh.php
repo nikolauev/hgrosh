@@ -24,6 +24,10 @@ $_['text_cancel'] = 'Cancel';
 $_['text_sort_order'] = 'Sort order:';
 $_['text_erip_tree_path'] = 'ERIP tree path';
 $_['text_erip_tree_path_help'] = 'ERIP tree path which will be shown to client in instructions (for example: Платежи > Магазин > Оплата)';
+$_['text_email_notification'] = 'Email notification';
+$_['text_email_notification_help'] = 'Enable email notificaton (by Hutkigrosh)';
+$_['text_sms_notification'] = 'Sms notification';
+$_['text_sms_notification_help'] = 'Enable sms notificaton (by Hutkigrosh)';
 
 $_['text_order_status_pending'] = 'Pending payment status id';
 $_['text_order_status_payed'] = 'Payed status id';

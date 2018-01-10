@@ -147,9 +147,9 @@ class HootkiGrosh
     public function apiBillNew(BillNewRq $billNewRq)
     {
         // выберем валюту
-        $curr = isset($data['curr']) ? trim($data['curr']) : 'BYN';
-        if (!in_array($curr, $this->currencies)) {
-            $curr = $this->currencies[0];
+        $billNewRq->currency = isset($billNewRq->currency) ? trim($billNewRq->currency) : 'BYN';
+        if (!in_array($billNewRq->currency, $this->currencies)) {
+            $billNewRq->currency = $this->currencies[0];
         }
 
         // формируем xml
@@ -161,11 +161,11 @@ class HootkiGrosh
         $Bill->addChild('addedDt', date('c'));
         $Bill->addChild('fullName', trim($billNewRq->fullName));
         $Bill->addChild('mobilePhone', trim($billNewRq->mobilePhone));
-        $Bill->addChild('notifyByMobilePhone', 'false');
+        $Bill->addChild('notifyByMobilePhone', $billNewRq->notifyByMobilePhone ? "true" : "false");
         if (isset($billNewRq->email)) {
             $Bill->addChild('email', trim($billNewRq->email)); // опционально
+            $Bill->addChild('notifyByEMail', $billNewRq->notifyByEMail ? "true" : "false");
         }
-        $Bill->addChild('notifyByEMail', 'false');
         if (isset($billNewRq->fullAddress)) {
             $Bill->addChild('fullAddress', trim($billNewRq->fullAddress)); // опционально
         }
@@ -571,6 +571,8 @@ class BillNewRq
     public $amount;
     public $currency;
     public $products;
+    public $notifyByEMail = false;
+    public $notifyByMobilePhone = false;
 }
 
 class WebPayRq
