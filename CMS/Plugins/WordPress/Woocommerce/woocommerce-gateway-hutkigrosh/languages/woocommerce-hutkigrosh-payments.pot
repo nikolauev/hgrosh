@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: WooCommerce Hutkigrosh Gateway Payments\n"
-"POT-Creation-Date: 2017-12-21 17:43+0300\n"
+"POT-Creation-Date: 2018-01-10 17:34+0300\n"
 "PO-Revision-Date: 2017-12-21 16:00+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -21,107 +21,131 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: hg.php:45
+#: hg.php:47
 msgid "plugin_title"
 msgstr ""
 
-#: hg.php:47
+#: hg.php:49
 msgid "plugin_description"
 msgstr ""
 
-#: hg.php:111
+#: hg.php:113
 msgid "order_status_failed"
 msgstr ""
 
-#: hg.php:113 hg.php:317
+#: hg.php:115 hg.php:335
 msgid "order_status_pending"
 msgstr ""
 
-#: hg.php:185
+#: hg.php:187
 msgid "enable_disable_payments_gateway"
 msgstr ""
 
-#: hg.php:186
+#: hg.php:188
 msgid "enable_disable_payments_gateway_label"
 msgstr ""
 
-#: hg.php:192
+#: hg.php:194
 msgid "hutkigrosh_storeid_title"
 msgstr ""
 
-#: hg.php:194
+#: hg.php:196
 msgid "hutkigrosh_storeid_desk"
 msgstr ""
 
-#: hg.php:199
+#: hg.php:201
 msgid "hutkigrosh_store_name_title"
 msgstr ""
 
-#: hg.php:201
+#: hg.php:203
 msgid "hutkigrosh_store_name_desk"
 msgstr ""
 
-#: hg.php:206
+#: hg.php:208
 msgid "hutkigrosh_login_title"
 msgstr ""
 
-#: hg.php:208
+#: hg.php:210
 msgid "hutkigrosh_login_desk"
 msgstr ""
 
-#: hg.php:213
+#: hg.php:215
 msgid "hutkigrosh_pswd_title"
 msgstr ""
 
-#: hg.php:215
+#: hg.php:217
 msgid "hutkigrosh_pswd_desk"
 msgstr ""
 
-#: hg.php:220
+#: hg.php:222
 msgid "hutkigrosh_payment_method_name_title"
 msgstr ""
 
-#: hg.php:222
+#: hg.php:224
 msgid "hutkigrosh_payment_method_name_desk"
 msgstr ""
 
-#: hg.php:223
+#: hg.php:225
 msgid "hutkigrosh_payment_method_name_default"
 msgstr ""
 
-#: hg.php:227
+#: hg.php:229
 msgid "hutkigrosh_payment_method_description_title"
 msgstr ""
 
-#: hg.php:229
+#: hg.php:231
 msgid "hutkigrosh_payment_method_description_desk"
 msgstr ""
 
-#: hg.php:230
+#: hg.php:232
 msgid "hutkigrosh_payment_method_description_default"
 msgstr ""
 
-#: hg.php:235
+#: hg.php:237
 msgid "hutkigrosh_checkout_success_text_title"
 msgstr ""
 
-#: hg.php:237
+#: hg.php:239
 msgid "hutkigrosh_checkout_success_text_desk"
 msgstr ""
 
-#: hg.php:238
+#: hg.php:240
 msgid "hutkigrosh_checkout_success_text_default"
 msgstr ""
 
-#: hg.php:242
+#: hg.php:244
+msgid "hutkigrosh_email_notification_title"
+msgstr ""
+
+#: hg.php:245
+msgid "hutkigrosh_email_notification_desk"
+msgstr ""
+
+#: hg.php:246
+msgid "hutkigrosh_email_notification_label"
+msgstr ""
+
+#: hg.php:251
+msgid "hutkigrosh_sms_notification_title"
+msgstr ""
+
+#: hg.php:252
+msgid "hutkigrosh_sms_notification_desk"
+msgstr ""
+
+#: hg.php:253
+msgid "hutkigrosh_sms_notification_label"
+msgstr ""
+
+#: hg.php:258
 msgid "hutkigrosh_sandbox_title"
 msgstr ""
 
-#: hg.php:243
+#: hg.php:259
 msgid "hutkigrosh_sandbox_desk"
 msgstr ""
 
-#: hg.php:244
+#: hg.php:260
 msgid "hutkigrosh_sandbox_label"
 msgstr ""
 

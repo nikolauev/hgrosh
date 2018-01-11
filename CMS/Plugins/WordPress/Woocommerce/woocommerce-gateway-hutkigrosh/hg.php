@@ -12,6 +12,8 @@ class WC_HUTKIGROSH_GATEWAY extends WC_Payment_Gateway
     const HUTKIGROSH_STORE_NAME = 'hutkigrosh_store_name';
     const HUTKIGROSH_LOGIN = 'hutkigrosh_login';
     const HUTKIGROSH_PASSWORD = 'hutkigrosh_pswd';
+    const HUTKIGROSH_EMAIL_NOTIFICATION = 'hutkigrosh_email_notification';
+    const HUTKIGROSH_SMS_NOTIFICATION = 'hutkigrosh_sms_notification';
     const HUTKIGROSH_SANDBOX = 'hutkigrosh_sandbox';
     const HUTKIGROSH_CHECKOUT_SUCCESS_TEXT = 'hutkigrosh_checkout_success_text';
     const HUTKIGROSH_ORDER_STATUS_ERROR = 'hutkigrosh_order_status_error';
@@ -173,7 +175,8 @@ class WC_HUTKIGROSH_GATEWAY extends WC_Payment_Gateway
         $responceXML = $hg->apiAlfaClick($alfaclickRq);
         $hg->apiLogOut();
         // wc_print_notice не работает здесь, т.к. вызов идет через AJAX
-        echo $responceXML->__toString();
+        echo intval($responceXML->__toString()) == '0' ? "error" : "ok";
+        wp_die();
     }
 
     // Build the administration fields for this specific Gateway
@@ -238,6 +241,20 @@ class WC_HUTKIGROSH_GATEWAY extends WC_Payment_Gateway
                 'default' => __('hutkigrosh_checkout_success_text_default', 'woocommerce-hutkigrosh-payments'),
                 'css' => 'max-width:80%;'
             ),
+            self::HUTKIGROSH_EMAIL_NOTIFICATION => array(
+                'title' => __("hutkigrosh_email_notification_title", 'woocommerce-hutkigrosh-payments'),
+                'desc_tip' => __('hutkigrosh_email_notification_desk', 'woocommerce-hutkigrosh-payments'),
+                'label' => __('hutkigrosh_email_notification_label', 'woocommerce-hutkigrosh-payments'),
+                'type' => 'checkbox',
+                'default' => 'no',
+            ),
+            self::HUTKIGROSH_SMS_NOTIFICATION => array(
+                'title' => __("hutkigrosh_sms_notification_title", 'woocommerce-hutkigrosh-payments'),
+                'desc_tip' => __('hutkigrosh_sms_notification_desk', 'woocommerce-hutkigrosh-payments'),
+                'label' => __('hutkigrosh_sms_notification_label', 'woocommerce-hutkigrosh-payments'),
+                'type' => 'checkbox',
+                'default' => 'no',
+            ),
             self::HUTKIGROSH_SANDBOX => array(
                 'title' => __("hutkigrosh_sandbox_title", 'woocommerce-hutkigrosh-payments'),
                 'desc_tip' => __('hutkigrosh_sandbox_desk', 'woocommerce-hutkigrosh-payments'),
@@ -263,6 +280,8 @@ class WC_HUTKIGROSH_GATEWAY extends WC_Payment_Gateway
             $billNewRq->fullAddress = $order_sybmol_link->get_shipping_country() . ' ' . $order_sybmol_link->get_shipping_city() . ' ' . $order_sybmol_link->get_shipping_address_1() . ' ' . $order_sybmol_link->get_shipping_address_2();
             $billNewRq->amount = $order_sybmol_link->get_total();
             $billNewRq->currency = $order_sybmol_link->get_currency();
+            $billNewRq->notifyByEMail = $this->get_option(self::HUTKIGROSH_EMAIL_NOTIFICATION);
+            $billNewRq->notifyByMobilePhone = $this->get_option(self::HUTKIGROSH_SMS_NOTIFICATION);
             // добавляем информацию о заказах
             $line_items = $order_sybmol_link->get_items();
             if (is_array($line_items)) {

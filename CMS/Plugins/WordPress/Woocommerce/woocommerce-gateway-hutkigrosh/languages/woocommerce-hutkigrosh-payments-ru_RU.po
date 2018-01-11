@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce Hutkigrosh Gateway Payments\n"
-"POT-Creation-Date: 2017-12-21 17:43+0300\n"
-"PO-Revision-Date: 2017-12-21 17:44+0300\n"
+"POT-Creation-Date: 2018-01-10 17:34+0300\n"
+"PO-Revision-Date: 2018-01-11 11:54+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -22,87 +22,87 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: hg.php:45
+#: hg.php:47
 msgid "plugin_title"
 msgstr "ХуткiГрош"
 
-#: hg.php:47
+#: hg.php:49
 msgid "plugin_description"
 msgstr ""
 "Плагин обеспечивает выставление счетов в систему ЕРИП через платежный шлюз "
 "hutkigrosh.by"
 
-#: hg.php:111
+#: hg.php:113
 msgid "order_status_failed"
 msgstr "Ошибка оплаты"
 
-#: hg.php:113 hg.php:317
+#: hg.php:115 hg.php:335
 msgid "order_status_pending"
 msgstr "Ожидание оплаты"
 
-#: hg.php:185
+#: hg.php:187
 msgid "enable_disable_payments_gateway"
 msgstr "Включить/Выключить"
 
-#: hg.php:186
+#: hg.php:188
 msgid "enable_disable_payments_gateway_label"
 msgstr "Включить прием платежей через ХуткiГрош"
 
-#: hg.php:192
+#: hg.php:194
 msgid "hutkigrosh_storeid_title"
 msgstr "Уникальный идентификатор услуги ЕРИП"
 
-#: hg.php:194
+#: hg.php:196
 msgid "hutkigrosh_storeid_desk"
 msgstr "ЕРИП ID, присвоенный магазину"
 
-#: hg.php:199
+#: hg.php:201
 msgid "hutkigrosh_store_name_title"
 msgstr "Название магазина"
 
-#: hg.php:201
+#: hg.php:203
 msgid "hutkigrosh_store_name_desk"
 msgstr "Название магазина будет отображаться в выставленных счетах"
 
-#: hg.php:206
+#: hg.php:208
 msgid "hutkigrosh_login_title"
 msgstr "Логин интернет-магазина"
 
-#: hg.php:208
+#: hg.php:210
 msgid "hutkigrosh_login_desk"
 msgstr "Логин в системе ХуткiГрош"
 
-#: hg.php:213
+#: hg.php:215
 msgid "hutkigrosh_pswd_title"
 msgstr "Пароль интернет-магазина"
 
-#: hg.php:215
+#: hg.php:217
 msgid "hutkigrosh_pswd_desk"
 msgstr "Пароль в системе ХуткiГрош"
 
-#: hg.php:220
+#: hg.php:222
 msgid "hutkigrosh_payment_method_name_title"
 msgstr "Название способа оплаты"
 
-#: hg.php:222
+#: hg.php:224
 msgid "hutkigrosh_payment_method_name_desk"
 msgstr "Название способа оплаты, которые увидит клиент при оформление заказа"
 
-#: hg.php:223
+#: hg.php:225
 msgid "hutkigrosh_payment_method_name_default"
 msgstr "Оплата в ЕРИП через «Хуткi Грош»"
 
-#: hg.php:227
+#: hg.php:229
 msgid "hutkigrosh_payment_method_description_title"
 msgstr "Описание способа оплаты для покупателя"
 
-#: hg.php:229
+#: hg.php:231
 msgid "hutkigrosh_payment_method_description_desk"
 msgstr ""
 "Описание для способа оплаты, которое отобразится клиенту при оформлении "
 "заказа"
 
-#: hg.php:230
+#: hg.php:232
 msgid "hutkigrosh_payment_method_description_default"
 msgstr ""
 "«Хуткi Грош»™ — платежный сервис по выставлению счетов в АИС \"Расчет"
@@ -112,17 +112,17 @@ msgstr ""
 "платежных терминалах, в системе электронных денег, через Интернет-банкинг, М-"
 "банкинг, интернет-эквайринг"
 
-#: hg.php:235
+#: hg.php:237
 msgid "hutkigrosh_checkout_success_text_title"
 msgstr "Текст успешного оформления заказа"
 
-#: hg.php:237
+#: hg.php:239
 msgid "hutkigrosh_checkout_success_text_desk"
 msgstr ""
 "Текст отобразиться клиенту после успешного оформления заказа и выставления "
 "счета в ХуткиГрош"
 
-#: hg.php:238
+#: hg.php:240
 msgid "hutkigrosh_checkout_success_text_default"
 msgstr ""
 "Спасибо за Ваш заказ.\n"
@@ -139,17 +139,43 @@ msgstr ""
 "4.​ Проверить корректность информации\n"
 "5.​ Совершить платеж."
 
-#: hg.php:242
+#: hg.php:244
+msgid "hutkigrosh_email_notification_title"
+msgstr "Email оповещение"
+
+#: hg.php:245
+msgid "hutkigrosh_email_notification_desk"
+msgstr ""
+"Включить email-оповещение клиентов, при успешном выставлении и оплате счета"
+
+#: hg.php:246
+msgid "hutkigrosh_email_notification_label"
+msgstr "Включить email-оповещение"
+
+#: hg.php:251
+msgid "hutkigrosh_sms_notification_title"
+msgstr "Sms оповещение"
+
+#: hg.php:252
+msgid "hutkigrosh_sms_notification_desk"
+msgstr ""
+"Включить sms-оповещение клиентов, при успешном выставлении и оплате счета"
+
+#: hg.php:253
+msgid "hutkigrosh_sms_notification_label"
+msgstr "Включить sms-оповещение"
+
+#: hg.php:258
 msgid "hutkigrosh_sandbox_title"
 msgstr "Режим \"песочницы\""
 
-#: hg.php:243
+#: hg.php:259
 msgid "hutkigrosh_sandbox_desk"
 msgstr ""
 "Данный режим позволяет провести выставление счетов в тестовую систему "
 "ХуткiГрош"
 
-#: hg.php:244
+#: hg.php:260
 msgid "hutkigrosh_sandbox_label"
 msgstr "Работа в тестовом режиме (с trial.hgrosh.by)"
 

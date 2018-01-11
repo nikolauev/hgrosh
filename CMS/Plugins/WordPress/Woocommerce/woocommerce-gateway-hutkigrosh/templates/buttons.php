@@ -26,14 +26,14 @@ if (!defined('ABSPATH')) {
                         phone: $('#phone').val(),
                         billid: $('#billID').val()
                     }
-                ).done(function (data) {
+                ).done(function (result) {
                     <?php $alfaclick_complete_text = '\'<div class="woocommerce-message" id="hutkigroshmessage">' . __('alfaclick_success_text', 'woocommerce-hutkigrosh-payments') . '</div>\'' ?>
                     <?php $alfaclick_failed_text = '\'<div class="woocommerce-error" id="hutkigroshmessage">' . __('alfaclick_failed_text', 'woocommerce-hutkigrosh-payments') . '</div>\'' ?>
                     $('#hutkigroshmessage').remove();
-                    if (Number(data) == '0') {
-                        $('.hutkigrosh').before(<?php echo $alfaclick_failed_text ?>);
-                    } else {
+                    if (result.trim() == 'ok'){
                         $('.hutkigrosh').before(<?php echo $alfaclick_complete_text ?>);
+                    } else {
+                        $('.hutkigrosh').before(<?php echo $alfaclick_failed_text ?>);
                     }
                 })
             })
