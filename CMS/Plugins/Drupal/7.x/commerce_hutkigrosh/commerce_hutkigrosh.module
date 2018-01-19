@@ -1,0 +1,422 @@
+<?php
+
+use Esas\HootkiGrosh\AlfaclickRq;
+use Esas\HootkiGrosh\BillNewRq;
+use Esas\HootkiGrosh\HootkiGrosh;
+use Esas\HootkiGrosh\WebPayRq;
+
+define('PAYMENT_METHOD_ID', 'commerce_hutkigrosh');
+define('CONFIG_HG_SHOP_NAME', 'hutkigrosh_shop_name');
+define('CONFIG_HG_LOGIN', 'hutkigrosh_login');
+define('CONFIG_HG_PASSWORD', 'hutkigrosh_password');
+define('CONFIG_HG_ERIP_ID', 'hutkigrosh_eripid');
+define('CONFIG_HG_SANDBOX', 'hutkigrosh_sandbox');
+define('CONFIG_HG_EMAIL_NOTIFICATION', 'hutkigrosh_email_notification');
+define('CONFIG_HG_SMS_NOTIFICATION', 'hutkigrosh_sms_notification');
+define('CONFIG_HG_COMPLETE_TEXT', 'hutkigrosh_erip_path');
+define('CONFIG_HG_PAYMENT_METHOD_NAME', 'hutkigrosh_payment_method_name');
+define('CONFIG_HG_PAYMENT_METHOD_DESCRIPTION', 'hutkigrosh_payment_method_description');
+
+define('HG_ORDER_STATUS_PENDING', 'hg_pay_pending');
+define('HG_ORDER_STATUS_COMPLETED', 'hg_pay_complete');
+define('HG_ORDER_STATUS_CANCLED', 'hg_pay_failed');
+
+define('HG_PAYMENT_STATUS_PENDING', 'hg_pay_pending');
+define('HG_PAYMENT_STATUS_COMPLETE', 'hg_pay_complete');
+define('HG_PAYMENT_STATUS_FAILED', 'hg_pay_failed');
+
+require_once('hutkigrosh_api.php');
+
+/**
+ * Implements hook_commerce_payment_method_info().
+ *
+ * @return array
+ */
+function commerce_hutkigrosh_commerce_payment_method_info()
+{
+
+    return array(
+        PAYMENT_METHOD_ID => array(
+            'title' => t('Hutkigrosh'),
+            'display_title' => t('Hutkigrosh'),
+//            'description' => isset($payment['settings']['hutkigrosh_payment_method_description']) ? $payment['settings']['hutkigrosh_payment_method_description'] : 'Payment via Hutkigrosh',
+            'active' => TRUE,
+            'terminal' => TRUE,
+            'offsite' => FALSE,
+            'offsite_autoredirect' => FALSE,
+        ),
+    );
+}
+
+/**
+ * Payment method callback: settings form.
+ *
+ * @param null $settings
+ * @return array
+ */
+function commerce_hutkigrosh_settings_form($settings = NULL)
+{
+    $settings = (array) $settings + commerce_hutkigrosh_default_settings();
+
+    $form = array();
+
+    $form[CONFIG_HG_SHOP_NAME] = array(
+        '#type' => 'textfield',
+        '#title' => t('Shop name'),
+        '#required' => TRUE,
+        '#default_value' => $settings[CONFIG_HG_SHOP_NAME]
+    );
+    $form[CONFIG_HG_ERIP_ID] = array(
+        '#type' => 'textfield',
+        '#title' => t('ERIP ID'),
+        '#required' => TRUE,
+        '#default_value' => $settings[CONFIG_HG_ERIP_ID]
+    );
+    $form[CONFIG_HG_LOGIN] = array(
+        '#type' => 'textfield',
+        '#title' => t('Hutkigrosh login'),
+        '#default_value' => $settings[CONFIG_HG_LOGIN],
+        '#required' => TRUE,
+    );
+    $form[CONFIG_HG_PASSWORD] = array(
+        '#type' => 'textfield',
+        '#title' => t('Hutkigrosh password'),
+        '#default_value' => $settings[CONFIG_HG_PASSWORD],
+        '#required' => TRUE,
+
+    );
+    $form[CONFIG_HG_EMAIL_NOTIFICATION] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Email notification'),
+        '#default_value' => $settings[CONFIG_HG_EMAIL_NOTIFICATION],
+    );
+    $form[CONFIG_HG_SMS_NOTIFICATION] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Sms notification'),
+        '#default_value' => $settings[CONFIG_HG_SMS_NOTIFICATION],
+    );
+    $form[CONFIG_HG_SANDBOX] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Sandbox'),
+        '#default_value' => $settings[CONFIG_HG_SANDBOX],
+    );
+    $form[CONFIG_HG_PAYMENT_METHOD_NAME] = array(
+        '#type' => 'textfield',
+        '#title' => t('Display payment method name'),
+        '#required' => TRUE,
+//        '#default_value' => t('Hutkigrosh (ERIP)')
+        '#default_value' => $settings[CONFIG_HG_PAYMENT_METHOD_NAME]
+    );
+    $form[CONFIG_HG_PAYMENT_METHOD_DESCRIPTION] = array(
+        '#type' => 'textfield',
+        '#title' => t('Display payment method description'),
+        '#required' => TRUE,
+        '#default_value' => $settings[CONFIG_HG_PAYMENT_METHOD_DESCRIPTION]
+    );
+    $form[CONFIG_HG_COMPLETE_TEXT] = array(
+        '#type' => 'textarea',
+        '#title' => t('Complete text'),
+        '#required' => FALSE,
+        '#default_value' => $settings[CONFIG_HG_COMPLETE_TEXT]
+    );
+    return $form;
+}
+
+function commerce_hutkigrosh_default_settings() {
+    return array(
+        CONFIG_HG_PAYMENT_METHOD_DESCRIPTION => t('Adding bills to ERIP via Hutkigrosh gateway'),
+        CONFIG_HG_PAYMENT_METHOD_NAME => t('Hutkigrosh (ERIP)'),
+        CONFIG_HG_COMPLETE_TEXT => t('Your bill was successfully added to ERIP.')
+    );
+}
+
+function commerce_hutkigrosh_commerce_order_status_info()
+{
+    $order_statuses = array();
+
+    $order_statuses[HG_ORDER_STATUS_PENDING] = array(
+        'name' => HG_ORDER_STATUS_PENDING,
+        'title' => t('ERIP pay: pending'),
+        'state' => 'pending',
+    );
+
+    $order_statuses[HG_ORDER_STATUS_COMPLETED] = array(
+        'name' => HG_ORDER_STATUS_COMPLETED,
+        'title' => t('ERIP pay: complete'),
+        'state' => 'completed',
+    );
+
+    $order_statuses[HG_ORDER_STATUS_CANCLED] = array(
+        'name' => HG_ORDER_STATUS_CANCLED,
+        'title' => t('ERIP pay: failed'),
+        'state' => 'canceled',
+    );
+
+    return $order_statuses;
+}
+
+function commerce_hutkigrosh_submit_form($payment_method, $pane_values, $checkout_pane, $order)
+{
+    $form = array();
+
+    // Выводим информацию о способе оплаты
+    if (!empty($payment_method['settings'][CONFIG_HG_PAYMENT_METHOD_DESCRIPTION])) {
+        $form['commerce_hutkigrosh_information'] = array(
+            '#markup' => $payment_method['settings'][CONFIG_HG_PAYMENT_METHOD_DESCRIPTION]
+        );
+    }
+
+    return $form;
+}
+
+function commerce_hutkigrosh_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge)
+{
+    $transaction = null;
+    $settings = $payment_method['settings'];
+    try {// Return an error if the enabling action's settings haven't been configured.
+        if (empty($settings[CONFIG_HG_ERIP_ID])
+            || empty($settings[CONFIG_HG_LOGIN])
+            || empty($settings[CONFIG_HG_PASSWORD])) {
+            throw new Exception('Payment gateway is not configured for use.');
+        }
+        // Создаём и сохраняем транзакцию, до отправки на hutkigrosh
+        $transaction = commerce_payment_transaction_new('commerce_hutkigrosh', $order->order_id);
+        $transaction->instance_id = $payment_method['instance_id'];
+        $transaction->amount = $charge['amount'];
+        $transaction->currency_code = $charge['currency_code'];
+        $transaction->status = COMMERCE_PAYMENT_STATUS_PENDING;
+        $transaction->message = t('The payment is processing...');
+        commerce_payment_transaction_save($transaction);
+
+        $hg = new HootkiGrosh($settings[CONFIG_HG_SANDBOX]);
+        $res = $hg->apiLogIn($settings[CONFIG_HG_LOGIN], $settings[CONFIG_HG_PASSWORD]);
+
+        // Ошибка авторизации
+        if (!$res) {
+            $error = $hg->getError();
+            $hg->apiLogOut(); // Завершаем сеанс
+            throw new Exception($error);
+        }
+
+        $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
+        $billNewRq = new BillNewRq();
+        $billNewRq->eripId = $settings[CONFIG_HG_ERIP_ID];
+        $billNewRq->invId = $order->order_number;
+        $customerData = $order_wrapper->commerce_customer_shipping->commerce_customer_address->value();
+        $amountData = $order_wrapper->commerce_order_total->value();
+        $userProfile_wrapper = entity_metadata_wrapper('commerce_customer_profile', $order_wrapper->commerce_customer_billing->value());
+        $billNewRq->fullName = $customerData['name_line'];
+        $billNewRq->mobilePhone = $userProfile_wrapper->field_phone->value(); //необходимо добавить поле https://docs.drupalcommerce.org/commerce1/user-guide/customer-profiles/configuring--creating-customer-profiles
+        $billNewRq->email = $order->mail;
+        $billNewRq->fullAddress = $customerData['thoroughfare'] . ' ' . $customerData['locality'] . ' ' . $customerData['administrative_area'];
+        $billNewRq->amount = convertAmount($amountData['amount']);
+        $billNewRq->currency = $amountData['currency_code'];
+        $billNewRq->notifyByEMail = $settings[CONFIG_HG_EMAIL_NOTIFICATION];
+        $billNewRq->notifyByMobilePhone = $settings[CONFIG_HG_SMS_NOTIFICATION];
+        foreach ($order_wrapper->commerce_line_items as $delta => $line_item_wrapper) {
+            if (in_array($line_item_wrapper->type->value(), commerce_product_line_item_types())) {
+                $product = $line_item_wrapper->commerce_product->value();
+                $arItem['invItemId'] = $product->product_id;
+                $arItem['desc'] = $product->title;
+                $arItem['count'] = round($line_item_wrapper->quantity->value());
+                $arItem['amt'] = convertAmount($line_item_wrapper->commerce_unit_price->amount->value());
+                $arItems[] = $arItem;
+                unset($arItem);
+            }
+        }
+        $billNewRq->products = $arItems;
+
+        $billID = $hg->apiBillNew($billNewRq);
+        if (!$billID) {
+            $error = $hg->getError();
+            $hg->apiLogOut(); // Завершаем сеанс
+            throw new Exception($error);
+        }
+        $hg->apiLogOut();
+        $transaction->remote_id = $billID;
+        $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
+        $transaction->message = t('The payment is complete');
+        commerce_payment_transaction_save($transaction);
+        commerce_order_status_update($order, HG_ORDER_STATUS_PENDING);
+    } catch (Exception $e) {
+        if (isset($transaction)) {
+            $transaction->status = COMMERCE_PAYMENT_STATUS_FAILURE;
+            $transaction->message = $e->getMessage();
+            commerce_payment_transaction_save($transaction);
+//            commerce_order_status_update($order, 'canceled', FALSE, TRUE, t('Order canceled because it was rejected by Hutkigrosh')); //TODO возможнос, стоит изменять статус заказа, чтобы в следующий раз сгенерировался новый идентификатор
+        }
+        drupal_set_message($e->getMessage(), 'error');
+        return false;
+    }
+
+}
+
+function convertAmount($amountInCents)
+{
+    return number_format($amountInCents / 100, 2);
+}
+
+function commerce_hutkigrosh_commerce_checkout_page_info_alter(&$checkout_pages)
+{
+    $checkout_pages['payment']['help'] = 'help';
+}
+
+
+function commerce_hutkigrosh_theme($existing, $type, $theme, $path)
+{
+    $theme_path = drupal_get_path('module', PAYMENT_METHOD_ID) . '/theme';
+    return array(
+        'hutkigrosh_complete_buttons' => array(
+            'variables' => array(
+                'webpay_form' => NULL,
+                'alfaclick_url' => NULL,
+                'alfaclick_phone' => NULL,
+                'alfaclick_label' => NULL,
+                'alfaclick_billID' => NULL),
+            'template' => 'block--commerce_hutkigrosh_complete_buttons',
+            'path' => $theme_path,
+        )
+    );
+}
+
+function commerce_hutkigrosh_page_alter(&$page)
+{
+    $current_path = current_path();
+    $exclude_path = "checkout/*/complete";
+    $match = drupal_match_path(drupal_strtolower($current_path), drupal_strtolower($exclude_path));
+    if ($match) {
+        // идентификатор заказа приходится брать из пути, возможно есть какой-то более удачный вариант?
+        if (!preg_match('/checkout\/(.*)\/complete/', $current_path, $result))
+            throw new Exception('Can not detect order_id');
+        $order = commerce_order_load($result[1]);
+        if (empty($order)) {
+            throw new Exception('Can not detect order');
+        }
+        $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
+        $userProfile_wrapper = entity_metadata_wrapper('commerce_customer_profile', $order_wrapper->commerce_customer_billing->value());
+        $transactions = commerce_payment_transaction_load_multiple(array(), array('order_id' => $order->order_id));
+        $transaction = !empty($transactions) ? array_shift($transactions) : NULL;
+        if (is_null($transaction)) {
+            throw new Exception('No transaction for order');
+        }
+        $billId = $transaction->remote_id;
+
+        $settings = get_payment_method()['settings'];
+        $hg = new HootkiGrosh($settings[CONFIG_HG_SANDBOX]);
+        $res = $hg->apiLogIn($settings[CONFIG_HG_LOGIN], $settings[CONFIG_HG_PASSWORD]);
+
+        // Ошибка авторизации
+        if (!$res) {
+            $error = $hg->getError();
+            $hg->apiLogOut(); // Завершаем сеанс
+            throw new Exception($error);
+        }
+        $webPayRq = new WebPayRq();
+        $webPayRq->billId = $billId;
+        $webPayRq->returnUrl = url(current_path(), array('absolute' => TRUE)) . "&webpay_status=payed";
+        $webPayRq->cancelReturnUrl = url(current_path(), array('absolute' => TRUE)) . "&webpay_status=failed";
+
+        $webpayform = $hg->apiWebPay($webPayRq);
+        $hg->apiLogOut();
+        $variables['hutkigrosh_success_text'] = format_string($settings[CONFIG_HG_COMPLETE_TEXT], array("@order_number" => $order->order_id));
+        $variables['webpay_form'] = $webpayform;
+        $variables['alfaclick_url'] = url('commerce_hutkigrosh/alfaclick', array('absolute' => TRUE)) . "/";
+        $variables['alfaclick_phone'] = $userProfile_wrapper->field_phone->value();;
+        $variables['alfaclick_billID'] = $billId;
+        $variables['alfaclick_label'] = t('Add to alfaclick');
+
+        $default_form = $page['content']['system_main'];
+        $page['content']['system_main'] = '';
+        $page['content']['system_main']['default_form'] = $default_form;
+        $page['content']['system_main']['webpay_form'] = array(
+            '#weight' => 2,
+            '#markup' => theme('hutkigrosh_complete_buttons', $variables));
+    }
+}
+
+/**
+ * Implements hook_menu().
+ * В Drupal 7 calkback-и реализуются через элементы меню
+ * Добавляем callback-и для alfaclick и оповещения об успешной оплате счета ХуткимГрошем
+ */
+function commerce_hutkigrosh_menu()
+{
+    $items = array();
+    $items['commerce_hutkigrosh/alfaclick'] = array(
+        'title' => 'Ajax callback for Hutkigrosh Alfaclick API.',
+        'page callback' => 'commerce_hutkigrosh_alfaclick',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+    );
+    $items['commerce_hutkigrosh/notify'] = array(
+        'title' => 'Callback for Hutkigrosh bill paymenent notification.',
+        'page callback' => 'commerce_hutkigrosh_notify',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+function get_payment_method()
+{
+    return commerce_payment_method_instance_load(PAYMENT_METHOD_ID . "|commerce_payment_" . PAYMENT_METHOD_ID);
+}
+
+function commerce_hutkigrosh_alfaclick()
+{
+    $settings = get_payment_method()['settings'];
+    $hg = new HootkiGrosh($settings[CONFIG_HG_SANDBOX]);
+    $res = $hg->apiLogIn($settings[CONFIG_HG_LOGIN], $settings[CONFIG_HG_PASSWORD]);
+
+    // Ошибка авторизации
+    if (!$res) {
+        $error = $hg->getError();
+        $hg->apiLogOut(); // Завершаем сеанс
+        throw new Exception($error);
+    }
+    $alfaclickRq = new AlfaclickRq();
+    $alfaclickRq->billId = $_REQUEST['billid'];
+    $alfaclickRq->phone = $_POST['phone'];
+
+    $responceXML = $hg->apiAlfaClick($alfaclickRq);
+    $hg->apiLogOut();
+    print intval($responceXML->__toString()) == '0' ? "error" : "ok";
+    drupal_exit();
+}
+
+function commerce_hutkigrosh_notify()
+{
+    $settings = get_payment_method();
+    $hg = new HootkiGrosh($settings[CONFIG_HG_SANDBOX]);
+    $res = $hg->apiLogIn($settings[CONFIG_HG_LOGIN], $settings[CONFIG_HG_PASSWORD]);
+    // Ошибка авторизации
+    if (!$res) {
+        $error = $hg->getError();
+        $hg->apiLogOut(); // Завершаем сеанс
+        throw new Exception($error);
+    }
+    #дополнительно проверим статус счета в hg
+    $hgBillInfo = $hg->apiBillInfo($_REQUEST['purchaseid']);
+    if (empty($hgBillInfo)) {
+        $error = $hg->getError();
+        $hg->apiLogOut(); // Завершаем сеанс
+        throw new Exception($error);
+    } else {
+        $localOrderInfo = commerce_order_load($hgBillInfo['invId']);
+        $order_wrapper = entity_metadata_wrapper('commerce_order', $localOrderInfo);
+        $customerData = $order_wrapper->commerce_customer_shipping->commerce_customer_address->value();
+        $amountData = $order_wrapper->commerce_order_total->value();
+        if (trim($customerData['name_line']) != trim($hgBillInfo['fullName'])
+            || convertAmount($amountData['amount']) != $hgBillInfo['amt']) {
+            throw new Exception("Unmapped purchaseid");
+        }
+        if ($hgBillInfo['statusEnum'] == 'Payed') {
+            commerce_order_status_update($localOrderInfo, HG_ORDER_STATUS_COMPLETED);
+        } elseif (in_array($hgBillInfo['statusEnum'], array('Outstending', 'DeletedByUser', 'PaymentCancelled'))) {
+            commerce_order_status_update($localOrderInfo, HG_ORDER_STATUS_CANCLED);
+        } elseif (in_array($hgBillInfo['statusEnum'], array('PaymentPending', 'NotSet'))) {
+            commerce_order_status_update($localOrderInfo, HG_ORDER_STATUS_PENDING);
+        }
+    }
+    drupal_exit();
+}

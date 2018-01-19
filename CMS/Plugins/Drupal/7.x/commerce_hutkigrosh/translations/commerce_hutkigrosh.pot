@@ -1,0 +1,143 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  commerce_hutkigrosh.module: n/a
+#  commerce_hutkigrosh.install: n/a
+#  commerce_hutkigrosh.info: n/a
+#  theme/block--commerce_hutkigrosh_complete_buttons.tpl.php: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2018-01-19 15:55+0300\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: commerce_hutkigrosh.module:40;41
+msgid "Hutkigrosh"
+msgstr ""
+
+#: commerce_hutkigrosh.module:65
+msgid "Shop name"
+msgstr ""
+
+#: commerce_hutkigrosh.module:71
+msgid "ERIP ID"
+msgstr ""
+
+#: commerce_hutkigrosh.module:77
+msgid "Hutkigrosh login"
+msgstr ""
+
+#: commerce_hutkigrosh.module:83
+msgid "Hutkigrosh password"
+msgstr ""
+
+#: commerce_hutkigrosh.module:90
+msgid "Email notification"
+msgstr ""
+
+#: commerce_hutkigrosh.module:95
+msgid "Sms notification"
+msgstr ""
+
+#: commerce_hutkigrosh.module:100
+msgid "Sandbox"
+msgstr ""
+
+#: commerce_hutkigrosh.module:105
+msgid "Display payment method name"
+msgstr ""
+
+#: commerce_hutkigrosh.module:112
+msgid "Display payment method description"
+msgstr ""
+
+#: commerce_hutkigrosh.module:118
+msgid "Complete text"
+msgstr ""
+
+#: commerce_hutkigrosh.module:127
+msgid "Adding bills to ERIP via Hutkigrosh gateway"
+msgstr ""
+
+#: commerce_hutkigrosh.module:128
+msgid "Hutkigrosh (ERIP)"
+msgstr ""
+
+#: commerce_hutkigrosh.module:129
+msgid "Your bill was successfully added to ERIP."
+msgstr ""
+
+#: commerce_hutkigrosh.module:139
+msgid "ERIP pay: pending"
+msgstr ""
+
+#: commerce_hutkigrosh.module:145
+msgid "ERIP pay: complete"
+msgstr ""
+
+#: commerce_hutkigrosh.module:151
+msgid "ERIP pay: failed"
+msgstr ""
+
+#: commerce_hutkigrosh.module:188
+msgid "The payment is processing..."
+msgstr ""
+
+#: commerce_hutkigrosh.module:238
+msgid "The payment is complete"
+msgstr ""
+
+#: commerce_hutkigrosh.module:326
+msgid "Add to alfaclick"
+msgstr ""
+
+#: commerce_hutkigrosh.module:346
+msgid "Ajax callback for Hutkigrosh Alfaclick API."
+msgstr ""
+
+#: commerce_hutkigrosh.module:352
+msgid "Callback for Hutkigrosh bill paymenent notification."
+msgstr ""
+
+#: (duplicate) commerce_hutkigrosh.install:20 
+msgid "Enabled"
+msgstr ""
+
+#: (duplicate) commerce_hutkigrosh.install:20 
+msgid "Not found"
+msgstr ""
+
+#: (duplicate) commerce_hutkigrosh.install:26 
+msgid "Hutkigrosh requires the PHP <a href='!curl_url'>cURL</a> library."
+msgstr ""
+
+#: commerce_hutkigrosh.info:0
+msgid "Hutkigrosh payment"
+msgstr ""
+
+#: commerce_hutkigrosh.info:0
+msgid "Implements Hutkigrosh payment module for use with Drupal Commerce."
+msgstr ""
+
+#: commerce_hutkigrosh.info:0
+msgid "Commerce (Hutkigrosh)"
+msgstr ""
+
+#: theme/block--commerce_hutkigrosh_complete_buttons.tpl.php:6
+msgid "Webpay: payment complete"
+msgstr ""
+
+#: theme/block--commerce_hutkigrosh_complete_buttons.tpl.php:9
+msgid "Webpay: payment failed"
+msgstr ""
+
