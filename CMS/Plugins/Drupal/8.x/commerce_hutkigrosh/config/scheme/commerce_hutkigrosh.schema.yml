@@ -1,0 +1,27 @@
+commerce_payment.commerce_payment_gateway.plugin.hutkigrosh:
+  type: commerce_payment_gateway_configuration
+  mapping:
+    hutkigrosh_shop_name:
+      label: 'Shop name'
+      type: number
+    hutkigrosh_eripid:
+      label: 'ERIP ID'
+      type: number
+    hutkigrosh_login:
+      label: 'Login'
+      type: string
+    hutkigrosh_password:
+      label: 'Password'
+      type: string
+    hutkigrosh_sms_notification:
+      label: 'Sms notification'
+      type: number
+    hutkigrosh_email_notification:
+      label: 'Email notification'
+      type: string
+    hutkigrosh_payment_method_description:
+      label: 'Payment method description'
+      type: string
+    hutkigrosh_compete_message:
+      label: 'Complete message'
+      type: string

@@ -11,7 +11,8 @@
 На данный момент доступна beta-версии для CMS-систем:
 1. [OpenCart](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/OpenCart) (v.1.5.x, v.2.1.x, v.2.2.x, v.2.3.x, v.3.0.x)   
 2. [WordPress](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/WordPress) c модулем WooCommerce (v3.2)
-2. [Bitrix](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Bitrix)
+3. [Bitrix](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Bitrix)
+4. [Drupal](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Drupal)
 
 
 

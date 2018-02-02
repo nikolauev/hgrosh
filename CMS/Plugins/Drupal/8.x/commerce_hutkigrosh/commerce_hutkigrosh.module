@@ -1,0 +1,156 @@
+<?php
+
+use Drupal\commerce_hutkigrosh\api\HutkigroshAPI;
+use Drupal\commerce_hutkigrosh\api\WebPayRq;
+use Drupal\commerce_hutkigrosh\Plugin\Commerce\PaymentGateway\Hutkigrosh;
+use Drupal\Core\Url;
+use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\HasPaymentInstructionsInterface;
+use Drupal\commerce_order\Entity\Order;
+
+define('HUTKIGROSH_MODULE_ID', 'commerce_hutkigrosh');
+
+
+function commerce_hutkigrosh_theme($existing, $type, $theme, $path)
+{
+    $theme_path = drupal_get_path('module', HUTKIGROSH_MODULE_ID) . '/templates';
+    return array(
+        'commerce_hutkigrosh_checkout_completion_form' => array(
+            'variables' => array(
+                'payment_instructions' => NULL,
+                'webpay_form' => NULL,
+                'webpay_status' => NULL,
+                'alfaclick_url' => NULL,
+                'alfaclick_phone' => NULL,
+                'alfaclick_label' => NULL,
+                'alfaclick_bill_id' => NULL,
+                'alfaclick_order_id' => NULL),
+            'template' => 'commerce-hutkigrosh-checkout-completion-form',
+            'path' => $theme_path,
+        )
+    );
+}
+
+
+function commerce_hutkigrosh_preprocess_commerce_hutkigrosh_checkout_completion_form(&$variables)
+{
+    $order = getOrderFromCurrentUrl();
+    if (empty($order)) {
+        throw new Exception('Can not detect order');
+    }
+    if ($order->get('payment_gateway')->isEmpty()) {
+        return;
+    }
+    /** @var \Drupal\commerce_payment\Entity\PaymentGatewayInterface $payment_gateway */
+    $payment_gateway = $order->get('payment_gateway')->entity;
+    /** @var \Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\HasPaymentInstructionsInterface $payment_gateway_plugin */
+    $payment_gateway_plugin = $payment_gateway->getPlugin();
+    /** @var \Drupal\commerce_payment\Entity\PaymentInterface $payments */
+    $payment = null;
+    if ($payment_gateway_plugin instanceof HasPaymentInstructionsInterface) {
+        $payment_storage = \Drupal::entityTypeManager()->getStorage('commerce_payment');
+        $payments = $payment_storage->loadMultipleByOrder($order);
+        $payments = array_filter($payments, function ($payment) use ($payment_gateway) {
+            return $payment->getPaymentGatewayId() == $payment_gateway->id()
+                && in_array($payment->getState()->value, array(Hutkigrosh::HG_PAYMENT_STATUS_PENDING, Hutkigrosh::HG_PAYMENT_STATUS_COMPLETE))
+                && $payment->getRemoteId();
+        });
+        $payment = reset($payments);
+        if (!$payment) {
+            throw new Exception(t("Order payment is not complete"));
+        } else {
+            $variables['payment_instructions'] = $payment_gateway_plugin->buildPaymentInstructions($payment);
+        }
+    }
+    $configuration = $payment_gateway->getPluginConfiguration();
+    $hg = new HutkigroshAPI($configuration[Hutkigrosh::CONFIG_HG_SANDBOX]);
+    $res = $hg->apiLogIn($configuration[Hutkigrosh::CONFIG_HG_LOGIN], $configuration[Hutkigrosh::CONFIG_HG_PASSWORD]);
+
+    // Ошибка авторизации
+    if (!$res) {
+        $error = $hg->getError();
+        $hg->apiLogOut(); // Завершаем сеанс
+        throw new Exception($error);
+    }
+    $webPayRq = new WebPayRq();
+    $webPayRq->billId = $payment->getRemoteId();
+    $webPayRq->returnUrl = Url::fromRoute('<current>', array('webpay_status' => 'payed'), array('absolute' => TRUE))->toString();
+    $webPayRq->cancelReturnUrl = Url::fromRoute('<current>', array('webpay_status' => 'failed'), array('absolute' => TRUE))->toString();
+
+    $variables['webpay_form'] = $hg->apiWebPay($webPayRq);
+//    $variables['webpay_form'] = array('#markup' => $hg->apiWebPay($webPayRq)); https://www.drupal.org/node/2296163 так было бы более безопасно, но не работает
+    $variables['webpay_status'] = $_REQUEST['webpay_status'];
+    $hg->apiLogOut();
+    $variables['alfaclick_url'] = Url::fromRoute('commerce_hutkigrosh.alfaclick')->toString();
+    $variables['alfaclick_phone'] = $order->getBillingProfile()->field_phone->first()->value;
+    $variables['alfaclick_bill_id'] = $payment->getRemoteId();
+    $variables['alfaclick_order_id'] = $order->getOrderNumber(); // передаем order_id, что в  controller-е можно было вытянуть из БД заказ и получить конфигурацию модуля
+    $variables['alfaclick_label'] = t('Add to alfaclick');
+
+}
+
+function getOrderFromCurrentUrl () {
+    // не самый красивый способ получения идентификатора заказа
+    $current_path = Url::fromRoute('<current>')->toString();
+    if (!preg_match('/checkout\/(.*)\/complete/', $current_path, $result))
+        throw new Exception('Can not detect order_id');
+    $order = Order::load($result[1]);
+    return $order;
+}
+
+function commerce_hutkigrosh_theme_suggestions_commerce_checkout_completion_message_alter(array &$suggestions, array $variables)
+{
+    if ($variables['theme_hook_original'] == "commerce_checkout_completion_message") { //todo проверка что это оплата чере HG
+//        $suggestions[] = 'commerce_hutkigrosh_checkout_completion_message';
+    }
+}
+
+function commerce_hutkigrosh_theme_suggestions_page_alter(array &$suggestions, array $variables)
+{
+    if (end($suggestions) == "page__checkout__complete") { //todo проверка что это оплата чере HG
+//        $suggestions[] = 'commerce_hutkigrosh_checkout_completion_message';
+    }
+}
+
+function commerce_hutkigrosh_theme_suggestions_block_alter(array &$suggestions, array $variables)
+{
+    if ($variables['theme_hook_original'] == "commerce_checkout_completion_message") { //todo проверка что это оплата чере HG
+//        $suggestions[] = 'commerce_hutkigrosh_checkout_completion_message';
+    }
+}
+
+function commerce_hutkigrosh_theme_suggestions_form_alter(array &$suggestions, array $variables)
+{
+    if ($variables['element']['#step_id'] == "complete") { // может быть есть какой-то более удачный вариант проверки?
+        $order = getOrderFromCurrentUrl();
+        if ($order->get('payment_gateway')->entity->getPlugin() instanceof Hutkigrosh) {
+            $suggestions[] = 'commerce_hutkigrosh_checkout_completion_form';
+        }
+    }
+}
+
+
+///**
+// * Implements hook_menu().
+// * В Drupal 7 calkback-и реализуются через элементы меню
+// * Добавляем callback-и для alfaclick и оповещения об успешной оплате счета ХуткимГрошем
+// */
+//function commerce_hutkigrosh_menu()
+//{
+//    $items = array();
+//    $items['commerce_hutkigrosh/alfaclick'] = array(
+//        'title' => 'Ajax callback for Hutkigrosh Alfaclick API.',
+//        'page callback' => 'commerce_hutkigrosh_alfaclick',
+//        'access arguments' => array('access content'),
+//        'type' => MENU_CALLBACK,
+//    );
+//    $items['commerce_hutkigrosh/notify'] = array(
+//        'title' => 'Callback for Hutkigrosh bill paymenent notification.',
+//        'page callback' => 'commerce_hutkigrosh_notify',
+//        'access arguments' => array('access content'),
+//        'type' => MENU_CALLBACK,
+//    );
+//    return $items;
+//}
+//
+//
+

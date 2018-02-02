@@ -1,0 +1,12 @@
+name: 'Commerce Hutkigrosh'
+type: module
+description: 'Implements Hutkigrosh payment gateway for commerce.'
+package: Commerce
+hidden: false
+dependencies:
+  - commerce:commerce_payment
+
+version: '8.x-1.0'
+core: '8.x'
+project: 'commerce_hutkigrosh'
+datestamp: 1499960649

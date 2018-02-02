@@ -1,0 +1,12 @@
+commerce_hutkigrosh.alfaclick:
+  path: '/commerce_hutkigrosh/alfaclick'
+  defaults:
+      _controller: '\Drupal\commerce_hutkigrosh\Controller\HutkigroshController::alfaclick'
+  requirements:
+      _access: 'TRUE'
+commerce_hutkigrosh.notify:
+  path: '/commerce_hutkigrosh/notify'
+  defaults:
+      _controller: '\Drupal\commerce_hutkigrosh\Controller\HutkigroshController::notify'
+  requirements:
+      _access: 'TRUE'

@@ -1,0 +1,58 @@
+{#
+/**
+ * @file
+ * Default theme implementation for the completion message.
+ *
+ * Available variables:
+ * - order_entity: The order entity.
+ * - payment_instructions: The payment instructions, if provided.
+ *
+ * @ingroup themeable
+ */
+#}
+<form{{ attributes }}>
+    {{ children }}
+    <div class="checkout-complete__payment-instructions">
+        {{ payment_instructions }}
+    </div>
+</form>
+{% if (webpay_status and webpay_status == 'payed') %}
+<div class="messages messages--status" id="hutkigrosh-message">{{ "Webpay: payment complete"|t }}</div>
+{% elseif (webpay_status and webpay_status == 'failed') %}
+<div class="messages messages--warning" id="hutkigrosh-message">{{ "Webpay: payment failed"|t }}</div>
+{% endif %}
+<div class="hutkigrosh_buttons">
+    <div class="webpayform">
+        {#https://www.drupal.org/node/2296163 использовать raw небезопасно, но вариант с markup не сработал#}
+        {{ webpay_form|raw }}
+    </div>
+    <br>
+    <div class="alfaclick">
+        <input type="hidden" value="{{ alfaclick_bill_id }}" id="bill_id"/>
+        <input type="hidden" value="{{ alfaclick_order_id }}" id="order_id"/>
+        <input type="tel" maxlength="20" value="{{ alfaclick_phone }}" id="phone"/>
+        <a class="btn btn-primary" id="alfaclick_button"> {{ alfaclick_label }}</a>
+    </div>
+</div>
+<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#alfaclick_button').click(function () {
+            $.post('{{ alfaclick_url }}',
+                {
+                    phone: $('#phone').val(),
+                    order_id: $('#order_id').val(),
+                    bill_id: $('#bill_id').val()
+                }
+            ).done(function (result) {
+                if (result.trim() == 'ok') {
+                    $('#hutkigrosh_message').remove();
+                    $('.hutkigrosh_buttons').before('<div class="messages messages--status" id="hutkigrosh_message">Выставлен счет в системе AlfaClick</div>');
+                } else {
+                    $('#hutkigrosh_message').remove();
+                    $('.hutkigrosh_buttons').before('<div class="messages messages--warning" id="hutkigrosh_message">Не удалось выставить счет в системе AlfaClick</div>');
+                }
+            })
+        })
+    });
+</script>
