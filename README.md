@@ -13,6 +13,7 @@
 2. [WordPress](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/WordPress) c модулем WooCommerce (v3.2)
 3. [Bitrix](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Bitrix)
 4. [Drupal](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Drupal)
+5. [Joomla](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Joomla)
 
 
 

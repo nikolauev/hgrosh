@@ -1,13 +1,13 @@
 <?php
 
-namespace Alexantr\HootkiGrosh;
+namespace Esas\HutkiGrosh;
 
 /**
  * HootkiGrosh class
  *
  * @author Alex Yashkin <alex.yashkin@gmail.com>
  */
-class HootkiGrosh
+class HutkiGrosh
 {
     private static $cookies_file;
 
@@ -21,11 +21,11 @@ class HootkiGrosh
     public $cookies_dir;
 
     // api url
-    private $api_url = 'https://www.hutkigrosh.by/API/v1/'; // рабочий
-    private $test_api_url = 'https://trial.hgrosh.by/API/v1/'; // тестовый
+    const API_URL = 'https://www.hutkigrosh.by/API/v1/'; // рабочий
+    const API_URL_TEST = 'https://trial.hgrosh.by/API/v1/'; // тестовый
 
     // Список ошибок
-    private $status_error = array(
+    const STATUS_ERRORS = array(
         '3221291009' => 'Общая ошибка сервиса',
         '3221291521' => 'Нет информации о счете',
         '3221291522' => 'Нет возможности удалить счет',
@@ -65,9 +65,9 @@ class HootkiGrosh
     public function __construct($is_test = false)
     {
         if ($is_test) {
-            $this->base_url = $this->test_api_url;
+            $this->base_url = self::API_URL_TEST;
         } else {
-            $this->base_url = $this->api_url;
+            $this->base_url = self::API_URL;
         }
 
         if (!isset(self::$cookies_file)) {
@@ -144,40 +144,38 @@ class HootkiGrosh
      *
      * @return bool|string
      */
-    public function apiBillNew($data)
+    public function apiBillNew(BillNewRq $billNewRq)
     {
         // выберем валюту
-        $curr = isset($data['curr']) ? trim($data['curr']) : 'BYN';
-        if (!in_array($curr, $this->currencies)) {
-            $curr = $this->currencies[0];
+        $billNewRq->currency = isset($billNewRq->currency) ? trim($billNewRq->currency) : 'BYN';
+        if (!in_array($billNewRq->currency, $this->currencies)) {
+            $billNewRq->currency = $this->currencies[0];
         }
 
         // формируем xml
         $Bill = new \SimpleXMLElement("<Bill></Bill>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/api/invoicing');
-        $Bill->addChild('eripId', trim($data['eripId']));
-        $Bill->addChild('invId', trim($data['invId']));
+        $Bill->addChild('eripId', trim($billNewRq->eripId));
+        $Bill->addChild('invId', trim($billNewRq->invId));
         $Bill->addChild('dueDt', date('c', strtotime('+1 day'))); // +1 день
         $Bill->addChild('addedDt', date('c'));
-        $Bill->addChild('fullName', trim($data['fullName']));
-        $Bill->addChild('mobilePhone', trim($data['mobilePhone']));
-        $Bill->addChild('notifyByMobilePhone', 'false');
-        if (isset($data['email'])) {
-            $Bill->addChild('email', trim($data['email'])); // опционально
+        $Bill->addChild('fullName', trim($billNewRq->fullName));
+        $Bill->addChild('mobilePhone', trim($billNewRq->mobilePhone));
+        $Bill->addChild('notifyByMobilePhone', $billNewRq->notifyByMobilePhone ? "true" : "false");
+        if (isset($billNewRq->email)) {
+            $Bill->addChild('email', trim($billNewRq->email)); // опционально
+            $Bill->addChild('notifyByEMail', $billNewRq->notifyByEMail ? "true" : "false");
         }
-        $Bill->addChild('notifyByEMail', 'false');
-        if (isset($data['fullAddress'])) {
-            $Bill->addChild('fullAddress', trim($data['fullAddress'])); // опционально
+        if (isset($billNewRq->fullAddress)) {
+            $Bill->addChild('fullAddress', trim($billNewRq->fullAddress)); // опционально
         }
-        if (isset($data['amt'])) {
-            $Bill->addChild('amt', (float)$data['amt']); // опционально
-        }
-        $Bill->addChild('curr', $curr);
+        $Bill->addChild('amt', (float)$billNewRq->amount); // опционально
+        $Bill->addChild('curr', $billNewRq->currency);
         $Bill->addChild('statusEnum', 'NotSet');
         // Список товаров/услуг
-        if (isset($data['products']) && !empty($data['products'])) {
+        if (isset($billNewRq->products) && !empty($billNewRq->products)) {
             $products = $Bill->addChild('products');
-            foreach ($data['products'] as $pr) {
+            foreach ($billNewRq->products as $pr) {
                 $ProductInfo = $products->addChild('ProductInfo');
                 if (isset($pr['invItemId'])) {
                     $ProductInfo->addChild('invItemId', trim($pr['invItemId'])); // опционально
@@ -229,7 +227,7 @@ class HootkiGrosh
         // формируем xml
         $Bill = new \SimpleXMLElement("<BgpbPayParam></BgpbPayParam>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
-        $Bill->addChild('billId',$data['billId']);
+        $Bill->addChild('billId', $data['billId']);
 //        $products = $Bill->addChild('orderData');
 //        $products->addChild('eripId',$data['eripId']);
 //        $products->addChild('spClaimId',$data['spClaimId']);
@@ -257,20 +255,44 @@ class HootkiGrosh
      *
      * @return bool|string
      */
-    public function apiAlfaClick($data)
+    public function apiAlfaClick(AlfaclickRq $alfaclickRq)
     {
         // формируем xml
         $Bill = new \SimpleXMLElement("<AlfaClickParam></AlfaClickParam>");
         $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
-        $Bill->addChild('billId',$data['billId']);
-        $Bill->addChild('phone',$data['phone']);
+        $Bill->addChild('billId', $alfaclickRq->billId);
+        $Bill->addChild('phone', $alfaclickRq->phone);
         $xml = $Bill->asXML();
         // запрос
         $res = $this->requestPost('Pay/AlfaClick', $xml);
-        $responseXML = simplexml_load_string($this->response);
-
+        $responseXML = simplexml_load_string($this->response); // 0 – если произошла ошибка, billId – если удалось выставить счет в AlfaClick
         return $responseXML;
     }
+
+    /**
+     * Получение формы виджета для оплаты картой
+     *
+     * @param array $data
+     *
+     * @return bool|string
+     */
+
+    public function apiWebPay(WebPayRq $webPayRq)
+    {
+        // формируем xml
+        $Bill = new \SimpleXMLElement("<WebPayParam></WebPayParam>");
+        $Bill->addAttribute('xmlns', 'http://www.hutkigrosh.by/API/PaymentSystems');
+        $Bill->addChild('billId', $webPayRq->billId);
+        $Bill->addChild('returnUrl', htmlspecialchars($webPayRq->returnUrl));
+        $Bill->addChild('cancelReturnUrl', htmlspecialchars($webPayRq->cancelReturnUrl));
+        $Bill->addChild('submitValue', "Pay with card");
+        $xml = $Bill->asXML();
+        // запрос
+        $res = $this->requestPost('Pay/WebPay', $xml);
+        $responseXML = simplexml_load_string($this->response, null, LIBXML_NOCDATA);
+        return $responseXML->form->__toString();
+    }
+
 
     /**
      * Извлекает информацию о выставленном счете
@@ -379,7 +401,7 @@ class HootkiGrosh
      */
     public function getError()
     {
-        return 'Счет не выставлен! Произошла ошибка: '.$this->error.'. <br> Повторите заказ.';
+        return 'Счет не выставлен! Произошла ошибка: ' . $this->error . '. <br> Повторите заказ.';
     }
 
     /**
@@ -470,6 +492,7 @@ class HootkiGrosh
 
         curl_setopt($this->ch, CURLOPT_URL, $this->base_url . $path);
         curl_setopt($this->ch, CURLOPT_HEADER, false); // включение заголовков в выводе
+        curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($this->ch, CURLOPT_VERBOSE, true); // вывод доп. информации в STDERR
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false); // не проверять сертификат узла сети
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false); // проверка существования общего имени в сертификате SSL
@@ -527,13 +550,54 @@ class HootkiGrosh
      *
      * @return string
      */
-    private function getStatusError($status)
+    public static function getStatusError($status)
     {
-        return (isset($this->status_error[$status])) ? $this->status_error[$status] : 'Неизвестная ошибка';
+        return (isset(self::STATUS_ERRORS[$status])) ? self::STATUS_ERRORS[$status] : 'Неизвестная ошибка';
     }
 
     public function getStatusResponce()
     {
         return $this->status;
     }
+}
+
+class BillNewRq
+{
+    public $eripId;
+    public $invId;
+    public $fullName;
+    public $mobilePhone;
+    public $email;
+    public $fullAddress;
+    public $amount;
+    public $currency;
+    public $products;
+    public $notifyByEMail = false;
+    public $notifyByMobilePhone = false;
+}
+
+class BillInfoRs
+{
+    public $eripId;
+    public $invId;
+    public $fullName;
+    public $mobilePhone;
+    public $email;
+    public $fullAddress;
+    public $amount;
+    public $currency;
+    public $products;
+}
+
+class WebPayRq
+{
+    public $billId;
+    public $returnUrl;
+    public $cancelReturnUrl;
+}
+
+class AlfaclickRq
+{
+    public $billId;
+    public $phone;
 }
