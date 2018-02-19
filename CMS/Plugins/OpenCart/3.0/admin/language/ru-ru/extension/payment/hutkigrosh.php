@@ -54,4 +54,3 @@ $_['payment_hutkigrosh_order_status_error_label'] = 'Идентикатор ст
 $_['payment_hutkigrosh_order_status_error_description'] = 'Данный статус будет выставлен заказу в случае неуспешной оплаты выставленного в ЕРИП счета';
 
 $_['error_permission']      = 'Внимание: у вас нет прав для редактирования модуля оплаты!';
-?>

@@ -22,4 +22,3 @@ $_['text_erip_instruction'] = '<p>Your order has been successfully added to ERIP
 
 $_['text_webpay_error'] = 'Webpay error!';
 $_['alfaclick_button_text'] = 'Выставить счет в AlfaClick';
-?>

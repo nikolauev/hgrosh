@@ -55,4 +55,3 @@ $_['payment_hutkigrosh_order_status_error_label'] = 'Error payment status id';
 $_['payment_hutkigrosh_order_status_error_description'] = 'Error payment status id';
 
 $_['error_permission']      = 'Warning: You do not have permission to modify the payment module!';
-?>

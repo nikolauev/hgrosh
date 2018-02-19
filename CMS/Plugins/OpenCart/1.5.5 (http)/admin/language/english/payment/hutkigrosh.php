@@ -32,4 +32,3 @@ $_['error_storeid_required']       = 'Store Id required!';
 $_['error_storename_required']       = 'Store Name required!';
 $_['error_hglogin_required']       = 'Login required!';
 $_['error_hgpassword_required']       = 'Password required!';
-?>

@@ -22,5 +22,3 @@ $_['text_erip_instruction'] = '<p>Ваш счет был успешно доба
 
 $_['text_webpay_error'] = 'Ошибка оплаты через Webpay';
 $_['alfaclick_button_text'] = 'Выставить счет в AlfaClick';
-?>
-
