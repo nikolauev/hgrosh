@@ -14,6 +14,7 @@
 3. [Bitrix](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Bitrix)
 4. [Drupal](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Drupal)
 5. [Joomla](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/Joomla)
+6. [CS-Cart](https://github.com/esasby/hgrosh/tree/master/CMS/Plugins/CSCart)
 
 
 

@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: cs-cart-ru\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+
+msgctxt "Addons::name::hutkigrosh"
+msgid "Hutkigrosh"
+msgstr "ХуткiГрош"
+
+msgctxt "Addons::description::hutkigrosh"
+msgid "Payment module to add order bills to ERIP"
+msgstr "Платежный модуль для приема платежей c помощью системы ЕРИП"
+
+msgctxt "Languages::payments.hutkigrosh_sandbox"
+msgid "Sandbox"
+msgstr "Режим песочницы"
+
+msgctxt "Languages::payments.hutkigrosh_shop_name"
+msgid "Shop name"
+msgstr "Название магазина"
+
+msgctxt "Languages::payments.hutkigrosh_erip_id"
+msgid "ERIP ID"
+msgstr "Уникальный идентификатор ЕРИП"
+
+msgctxt "Languages::payments.hutkigrosh_hg_login"
+msgid "Hutkigrosh login"
+msgstr "Имя пользователя ХуткiГрош"
+
+msgctxt "Languages::payments.hutkigrosh_hg_password"
+msgid "Hutkigrosh password"
+msgstr "Пароль ХуткiГрош"
+
+msgctxt "Languages::payments.hutkigrosh_notification_sms"
+msgid "Sms notification"
+msgstr "Sms оповещение"
+
+msgctxt "Languages::payments.hutkigrosh_bill_status_failed"
+msgid "Bill status failed"
+msgstr "Статус заказа при ошибке выставления счета в ЕРИП"
+
+msgctxt "Languages::payments.hutkigrosh_bill_status_pending"
+msgid "Bill status pending"
+msgstr "Статус заказа при ожидании оплаты счета в ЕРИП"
+
+msgctxt "Languages::payments.hutkigrosh_bill_status_payed"
+msgid "Bill status payed"
+msgstr "Статус заказа при успешной оплате счета в ЕРИП"
+
+msgctxt "Languages::payments.hutkigrosh_bill_status_canceled"
+msgid "Bill status canceled"
+msgstr "Статус заказа при отмене оплаты счета в ЕРИП"
+
+msgctxt "Languages::hutkigrosh.webpay.msg.success"
+msgid "Webpay: payment completed!"
+msgstr "Счет успешно оплачен через WebPay"
+
+msgctxt "Languages::hutkigrosh.webpay.msg.failed"
+msgid "Webpay: payment failed!"
+msgstr "Ошибка оплаты счета через WebPay"
+
+msgctxt "Languages::hutkigrosh.alfaclick.label"
+msgid "Add to Alfaclick"
+msgstr "Выставить в Альфаклик"
+
+msgctxt "Languages::hutkigrosh.alfaclick.msg.success"
+msgid "Bill was added to Alfaclick"
+msgstr "Счет успешно выставлен в систему Альфаклик"
+
+msgctxt "Languages::hutkigrosh.alfaclick.msg.failed"
+msgid "Can not add bill to Alfaclick"
+msgstr "Не удалось выставить счет в системе Альфаклик"
