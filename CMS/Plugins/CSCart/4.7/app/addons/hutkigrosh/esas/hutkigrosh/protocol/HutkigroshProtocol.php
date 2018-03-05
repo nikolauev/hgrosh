@@ -505,6 +505,10 @@ class HutkigroshProtocol
 
         // если файла еще нет, то создадим его при залогинивании и будем затем использовать при дальнейших запросах
         if (!is_file($cookies_path)) {
+            if (!is_writable($this->cookies_dir)){
+                $this->error = 'Cookie file[' . $cookies_path . '] is not writable! Check permissions for directory[' . $this->cookies_dir . ']';
+                return false;
+            }
             curl_setopt($this->ch, CURLOPT_COOKIEJAR, $cookies_path);
         }
         curl_setopt($this->ch, CURLOPT_COOKIEFILE, $cookies_path);
